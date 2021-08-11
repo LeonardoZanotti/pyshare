@@ -8,7 +8,7 @@ First, make sure you have [Python3.7](https://www.python.org/) or higher install
 
 So, enter the project folder and type the following commands:
 
-```bash
+```shell
 $ cp .env.example .env                        # create the .env file
 $ pip3.7 install SharePlum python-decouple    # install dependencies (use your pip version)
 ```
@@ -23,7 +23,7 @@ SP_LIST=<list-name>
 ```
 
 Then, just run the program:
-```bash
+```shell
 $ python3.7 pyshare.py                        # use your python version
 ```
 
