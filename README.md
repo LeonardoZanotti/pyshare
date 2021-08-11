@@ -14,7 +14,7 @@ $ pip3.7 install SharePlum python-decouple    # install dependencies (use your p
 ```
 
 Now, just fill the `.env` with your credentials from the SharePoint.
-```md
+```properties
 SP_LOGIN=<your-Microsoft-email>
 SP_PASSWORD=<your-Microsoft-password>
 SP_LINK=<https://abc.sharepoint.com>
@@ -24,7 +24,7 @@ SP_LIST=<list-name>
 
 Then, just run the program:
 ```bash
-$ python3.7 pyshare.py    # use your python version
+$ python3.7 pyshare.py                        # use your python version
 ```
 
 ## References
