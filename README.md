@@ -18,7 +18,7 @@ Now, just fill the `.env` with your credentials from the SharePoint.
 SP_LOGIN=<your-Microsoft-email>
 SP_PASSWORD=<your-Microsoft-password>
 SP_LINK=<https://abc.sharepoint.com>
-SP_SITE=<https://abc.sharepoint.com/sites/MySharePointSite/>
+SP_SITE=<MySharePointSite>                    # from https://abc.sharepoint.com/sites/MySharePointSite
 SP_LIST=<list-name>
 ```
 
