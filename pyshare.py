@@ -18,6 +18,9 @@ class SharePoint:
         self.spLink = config("SP_LINK")
         self.spSite = config("SP_SITE")
         self.spList = config("SP_LIST")
+        self.mongoClient = config("MONGO_CLIENT")
+        self.mongoDatabase = config("MONGO_DATABASE")
+        self.mongoCollection = config("MONGO_COLLECTION")
         self.authSpCookie = None
         self.authSpSite = None
         self.authSpList = None
@@ -88,7 +91,7 @@ class SharePoint:
         # Delete items
         try:
             # Ids to delete
-            deleteData = ["9"]
+            deleteData = ["23", "24"]
 
             print("Deleting items...")
             deleted = self.authSpList.UpdateListItems(data=deleteData, kind="Delete")
@@ -101,14 +104,12 @@ class SharePoint:
         # MongoDB
         try:
             print("Connecting to MongoDB...")
-            client = pymongo.MongoClient(
-                "mongodb://localhost:27017/?readPreference=primary&appname=MongoDB%20Compass&ssl=false"
-            )
+            client = pymongo.MongoClient(self.mongoClient)
             print(client.server_info())
             print("Connected!")
             print("Running payload...")
-            db = client["pyshare"]
-            collection = db["companies"]
+            db = client[self.mongoDatabase]
+            collection = db[self.mongoCollection]
             collection.insert_one({"Title": "mongo test"})
             collection.insert_one({"Title": "company two"})
             collection.insert_one({"Title": "company four"})
@@ -135,8 +136,7 @@ def main():
         sharepoint = SharePoint()
 
         # Authentication
-        if "-a" in args:
-            sharepoint.auth()
+        sharepoint.auth()
 
         # Create new items
         if "-c" in args:
