@@ -2,11 +2,13 @@
 # Leonardo Zanotti
 # https://github.com/LeonardoZanotti/pyshare
 
+# python modules
 import os
 import platform
 import sys
 from optparse import OptionParser
 
+# external modules
 import pymongo
 from decouple import config
 from shareplum import Office365, Site

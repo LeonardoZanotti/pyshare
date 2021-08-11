@@ -32,4 +32,6 @@ $ python3.7 pyshare.py                        # use your python version
 
 [PyMongo Documentation](https://pymongo.readthedocs.io/en/stable/)
 
+[OptParser Documentation](https://docs.python.org/3/library/optparse.html)
+
 [Performing A CRUD Operation On A SharePoint List Using Python - Ashirwad Satapathi](https://www.c-sharpcorner.com/article/performing-crud-operation-on-sharepoint-list-using-python/)
