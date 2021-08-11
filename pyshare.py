@@ -182,7 +182,7 @@ def main():
 
         opts, args = parser.parse_args()
 
-        if len(opts) == 1:
+        if not (True in vars(opts).values()):
             showHelp()
             return
 
@@ -240,16 +240,16 @@ def showHelp():
         On_Black = "\033[40m"  # Black Background
 
     print(
-        """
-            {BPurple}
+        """{BPurple}
     \t                  _                    
     \t  _ __  _   _ ___| |__   __ _ _ __ ___ 
     \t | '_ \| | | / __| '_ \ / _` | '__/ _ \\
     \t | |_) | |_| \__ \ | | | (_| | | |  __/
     \t | .__/ \__, |___/_| |_|\__,_|_|  \___|
-    \t |_|    |___/  
-            {BYellow} # Zanotti's SharePoint automation{Blue}
-            https://github.com/LeonardoZanotti/pyshare
+    \t |_|    |___/
+    \t  
+    {BYellow} # Zanotti's SharePoint automation{Blue}
+    https://github.com/LeonardoZanotti/pyshare
 
     To see all the program options use:
     \t
