@@ -5,6 +5,7 @@
 import os
 import platform
 import sys
+from optparse import OptionParser
 
 import pymongo
 from decouple import config
@@ -132,9 +133,54 @@ class SharePoint:
 
 def main():
     try:
-        args = sys.argv
+        # Options list
+        parser = OptionParser(
+            usage="Usage: python3.7 %prog [options]", add_help_option=True
+        )
+        parser.add_option(
+            "-c",
+            "--create",
+            action="store_true",
+            dest="spCreate",
+            default=False,
+            help="create items in Microsoft List",
+        )
+        parser.add_option(
+            "-u",
+            "--update",
+            action="store_true",
+            dest="spUpdate",
+            default=False,
+            help="update items in Microsoft List",
+        )
+        parser.add_option(
+            "-d",
+            "--delete",
+            action="store_true",
+            dest="spDelete",
+            default=False,
+            help="delete items of Microsoft List",
+        )
+        parser.add_option(
+            "-m",
+            "--mongo",
+            action="store_true",
+            dest="spMongo",
+            default=False,
+            help="do some MongoDB test operations",
+        )
+        parser.add_option(
+            "-s",
+            "--sync",
+            action="store_true",
+            dest="spSync",
+            default=False,
+            help="synchronize the Microsoft List with the MongoDB database",
+        )
 
-        if len(args) == 1:
+        opts, args = parser.parse_args()
+
+        if len(opts) == 1:
             showHelp()
             return
 
@@ -159,12 +205,12 @@ def main():
         # MongoDB
         if "-m" in args:
             sharepoint.mongo()
-    except:
+    except Exception:
         print("Error:", sys.exc_info())
 
 
 def showHelp():
-    ##### colors
+    # colors
     colors = True  # output colored c:
     machine = sys.platform  # detecting the os
     checkPlatform = platform.platform()  # get current version of os
