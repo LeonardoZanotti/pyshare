@@ -10,7 +10,7 @@ So, enter the project folder and type the following commands:
 
 ```shell
 $ cp .env.example .env                        # create the .env file
-$ pip3.7 install SharePlum python-decouple    # install dependencies (use your pip version)
+$ pip3.7 install SharePlum python-decouple pymongo    # install dependencies (use your pip version)
 ```
 
 Now, just fill the `.env` with your credentials from the SharePoint.

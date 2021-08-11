@@ -2,8 +2,10 @@
 # Leonardo Zanotti
 # https://github.com/LeonardoZanotti/pyshare
 
+
 import sys
 
+import pymongo
 from decouple import config
 from shareplum import Office365, Site
 from shareplum.site import Version
