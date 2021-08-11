@@ -2,6 +2,8 @@
 # Leonardo Zanotti
 # https://github.com/LeonardoZanotti/pyshare
 
+import os
+import platform
 import sys
 
 import pymongo
@@ -132,6 +134,10 @@ def main():
     try:
         args = sys.argv
 
+        if len(args) == 1:
+            showHelp()
+            return
+
         # Creates new SharePoint instance
         sharepoint = SharePoint()
 
@@ -155,6 +161,59 @@ def main():
             sharepoint.mongo()
     except:
         print("Error:", sys.exc_info())
+
+
+def showHelp():
+    ##### colors
+    colors = True  # output colored c:
+    machine = sys.platform  # detecting the os
+    checkPlatform = platform.platform()  # get current version of os
+    if machine.lower().startswith(("os", "win", "darwin", "ios")):
+        colors = False  # Mac and Windows shouldn't display colors :c
+    if (
+        checkPlatform.startswith("Windows-10")
+        and int(platform.version().split(".")[2]) >= 10586
+    ):
+        color = True  # coooolorssss \o/
+        os.system("")  # Enables the ANSI -> standard encoding that reads that colors
+    if not colors:
+        BGreen = BYellow = BPurple = BCyan = Yellow = Green = Red = Blue = On_Black = ""
+    else:
+        BGreen = "\033[1;32m"  # Bold Green
+        BYellow = "\033[1;33m"  # Bold Yellow
+        BPurple = "\033[1;35m"  # Bold Purple
+        BCyan = "\033[1;36m"  # Bold Cyan
+        Yellow = "\033[0;33m"  # Yellow
+        Green = "\033[0;32m"  # Green
+        Red = "\033[0;31m"  # Red
+        Blue = "\033[0;34m"  # Blue
+
+        # Background
+        On_Black = "\033[40m"  # Black Background
+
+    print(
+        """
+            {BPurple}
+    \t                  _                    
+    \t  _ __  _   _ ___| |__   __ _ _ __ ___ 
+    \t | '_ \| | | / __| '_ \ / _` | '__/ _ \\
+    \t | |_) | |_| \__ \ | | | (_| | | |  __/
+    \t | .__/ \__, |___/_| |_|\__,_|_|  \___|
+    \t |_|    |___/  
+            {BYellow} # Zanotti's SharePoint automation{Blue}
+            https://github.com/LeonardoZanotti/pyshare
+
+    To see all the program options use:
+    \t
+    {BGreen}$ python3.7 pyshare.py -h          
+            """.format(
+            BPurple=BPurple,
+            BGreen=BGreen,
+            Blue=Blue,
+            BYellow=BYellow,
+            On_Black=On_Black,
+        )
+    )
 
 
 if __name__ == "__main__":
