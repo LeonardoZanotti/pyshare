@@ -83,9 +83,18 @@ def main():
             db = client["pyshare"]
             collection = db["companies"]
             collection.insert_one({"Title": "mongo test"})
+            collection.insert_one({"Title": "company two"})
+            collection.insert_one({"Title": "company four"})
+            collection.update_one(
+                {"Title": "company four"}, {"$set": {"Title": "company five"}}
+            )
+            collection.update_many(
+                {"Title": "company two"}, {"$set": {"Title": "company six"}}
+            )
             items = collection.find({})
             for item in items:
                 print(item)
+            collection.delete_many({"Title": "mongo test"})
             print("MongoDB finished...")
     except:
         print("Error:", sys.exc_info())
