@@ -20,6 +20,8 @@ spList = config("SP_LIST")
 
 def main():
     try:
+        args = sys.argv
+
         # Authentication
         authcookie = Office365(
             spLink, username=spLogin, password=spPassword
@@ -39,35 +41,52 @@ def main():
         for item in data:
             print(item)
 
-        # New data to create
-        newData = [{"Title": "Bingo"}, {"Title": "Expertise"}]
-
         # Create new items
-        print("Creating items...")
-        created = sp_list.UpdateListItems(data=newData, kind="New")
-        if created:
-            print("Successfully created items!")
+        if "-c" in args:
+            # New data to create
+            newData = [{"Title": "Bingo"}, {"Title": "Expertise"}]
 
-        # Data to update
-        updateData = [
-            {"ID": "11", "Title": "Belest"},
-            {"ID": "12", "Title": "Update 4"},
-        ]
+            print("Creating items...")
+            created = sp_list.UpdateListItems(data=newData, kind="New")
+            if created:
+                print("Successfully created items!")
 
         # Update the list
-        print("Updating items...")
-        updated = sp_list.UpdateListItems(data=updateData, kind="Update")
-        if updated:
-            print("Successfully updated items!")
+        if "-u" in args:
+            # Data to update
+            updateData = [
+                {"ID": "11", "Title": "Belest"},
+                {"ID": "12", "Title": "Update 4"},
+            ]
 
-        # Ids to delete
-        deleteData = ["9"]
+            print("Updating items...")
+            updated = sp_list.UpdateListItems(data=updateData, kind="Update")
+            if updated:
+                print("Successfully updated items!")
 
         # Delete items
-        print("Deleting items...")
-        deleted = sp_list.UpdateListItems(data=deleteData, kind="Delete")
-        if deleted:
-            print("Successfully deleted items!")
+        if "-d" in args:
+            # Ids to delete
+            deleteData = ["9"]
+
+            print("Deleting items...")
+            deleted = sp_list.UpdateListItems(data=deleteData, kind="Delete")
+            if deleted:
+                print("Successfully deleted items!")
+
+        # MongoDB
+        if "-m" in args:
+            print("Executing MongoDB process...")
+            client = pymongo.MongoClient(
+                "mongodb://localhost:27017/?readPreference=primary&appname=MongoDB%20Compass&ssl=false"
+            )
+            db = client["pyshare"]
+            collection = db["companies"]
+            collection.insert_one({"Title": "mongo test"})
+            items = collection.find({})
+            for item in items:
+                print(item)
+            print("MongoDB finished...")
     except:
         print("Error:", sys.exc_info())
 
