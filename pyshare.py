@@ -43,59 +43,74 @@ def main():
 
         # Create new items
         if "-c" in args:
-            # New data to create
-            newData = [{"Title": "Bingo"}, {"Title": "Expertise"}]
+            try:
+                # New data to create
+                newData = [{"Title": "Bingo"}, {"Title": "Expertise"}]
 
-            print("Creating items...")
-            created = sp_list.UpdateListItems(data=newData, kind="New")
-            if created:
-                print("Successfully created items!")
+                print("Creating items...")
+                created = sp_list.UpdateListItems(data=newData, kind="New")
+                if created:
+                    print("Successfully created items!")
+            except Exception:
+                print("SharePoint Lists creation failed.")
 
         # Update the list
         if "-u" in args:
-            # Data to update
-            updateData = [
-                {"ID": "11", "Title": "Belest"},
-                {"ID": "12", "Title": "Update 4"},
-            ]
+            try:
+                # Data to update
+                updateData = [
+                    {"ID": "11", "Title": "Belest"},
+                    {"ID": "12", "Title": "Update 4"},
+                ]
 
-            print("Updating items...")
-            updated = sp_list.UpdateListItems(data=updateData, kind="Update")
-            if updated:
-                print("Successfully updated items!")
+                print("Updating items...")
+                updated = sp_list.UpdateListItems(data=updateData, kind="Update")
+                if updated:
+                    print("Successfully updated items!")
+            except Exception:
+                print("SharePoint Lists update failed.")
 
         # Delete items
         if "-d" in args:
-            # Ids to delete
-            deleteData = ["9"]
+            try:
+                # Ids to delete
+                deleteData = ["9"]
 
-            print("Deleting items...")
-            deleted = sp_list.UpdateListItems(data=deleteData, kind="Delete")
-            if deleted:
-                print("Successfully deleted items!")
+                print("Deleting items...")
+                deleted = sp_list.UpdateListItems(data=deleteData, kind="Delete")
+                if deleted:
+                    print("Successfully deleted items!")
+            except Exception:
+                print("SharePoint Lists delete failed.")
 
         # MongoDB
         if "-m" in args:
-            print("Executing MongoDB process...")
-            client = pymongo.MongoClient(
-                "mongodb://localhost:27017/?readPreference=primary&appname=MongoDB%20Compass&ssl=false"
-            )
-            db = client["pyshare"]
-            collection = db["companies"]
-            collection.insert_one({"Title": "mongo test"})
-            collection.insert_one({"Title": "company two"})
-            collection.insert_one({"Title": "company four"})
-            collection.update_one(
-                {"Title": "company four"}, {"$set": {"Title": "company five"}}
-            )
-            collection.update_many(
-                {"Title": "company two"}, {"$set": {"Title": "company six"}}
-            )
-            items = collection.find({})
-            for item in items:
-                print(item)
-            collection.delete_many({"Title": "mongo test"})
-            print("MongoDB finished...")
+            try:
+                print("Connecting to MongoDB...")
+                client = pymongo.MongoClient(
+                    "mongodb://localhost:2707/?readPreference=primary&appname=MongoDB%20Compass&ssl=false"
+                )
+                print(client.server_info())
+                print("Connected!")
+                print("Running payload...")
+                db = client["pyshare"]
+                collection = db["companies"]
+                collection.insert_one({"Title": "mongo test"})
+                collection.insert_one({"Title": "company two"})
+                collection.insert_one({"Title": "company four"})
+                collection.update_one(
+                    {"Title": "company four"}, {"$set": {"Title": "company five"}}
+                )
+                collection.update_many(
+                    {"Title": "company two"}, {"$set": {"Title": "company six"}}
+                )
+                items = collection.find({})
+                for item in items:
+                    print(item)
+                collection.delete_many({"Title": "mongo test"})
+                print("MongoDB finished...")
+            except Exception:
+                print("Unable to connect to the mongo server.")
     except:
         print("Error:", sys.exc_info())
 
