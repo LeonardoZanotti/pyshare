@@ -34,35 +34,43 @@ def main():
         sp_list = site.List(spList)
 
         # Get the list of the site
-        data = sp_list.GetListItems('All Items')
+        data = sp_list.GetListItems('All Items', fields=['ID','Title'])
 
         for item in data:
             print(item)
 
         # New data to create
         newData = [
-            { 'Title': 'flawless' },
-            { 'Title': 'Expert' }
+            { 'Title': 'Bingo' },
+            { 'Title': 'Expertise' }
         ]
 
         # Create new items
         print('Creating items...')
         created = sp_list.UpdateListItems(data=newData, kind='New')
         if created:
-            print('Creation successful!')
+            print('Successfully created items!')
 
         # Data to update
         updateData = [
-            { 'ID': '3', 'Title': 'Ash' },
-            { 'ID': '4', 'Title': 'Update' },
-            { 'ID': '5', 'Title': 'Update 3' }
+            { 'ID': '11', 'Title': 'Belest' },
+            { 'ID': '12', 'Title': 'Update 4' }
         ]
 
         # Update the list
         print('Updating items...')
         updated = sp_list.UpdateListItems(data=updateData, kind='Update')
         if updated:
-            print('Update successful!')
+            print('Successfully updated items!')
+
+        # Ids to delete
+        deleteData = ['9']    
+
+        # Delete items
+        print('Deleting items...')
+        deleted = sp_list.UpdateListItems(data=deleteData, kind='Delete') 
+        if deleted:
+            print('Successfully deleted items!')
     except:
         print('Error:', sys.exc_info())
 

@@ -29,3 +29,5 @@ $ python3.7 pyshare.py                        # use your python version
 
 ## References
 [SharePlum Documentation](https://pypi.org/project/SharePlum/)
+
+[Performing A CRUD Operation On A SharePoint List Using Python - Ashirwad Satapathi](https://www.c-sharpcorner.com/article/performing-crud-operation-on-sharepoint-list-using-python/)
