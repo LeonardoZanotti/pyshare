@@ -17,11 +17,10 @@ from shareplum.site import Version
 BGreen = "\033[1;32m"  # Bold Green
 BYellow = "\033[1;33m"  # Bold Yellow
 BPurple = "\033[1;35m"  # Bold Purple
-BCyan = "\033[1;36m"  # Bold Cyan
 Yellow = "\033[0;33m"  # Yellow
+Blue = "\033[0;34m"  # Blue
 Green = "\033[0;32m"  # Green
 Red = "\033[0;31m"  # Red
-Blue = "\033[0;34m"  # Blue
 
 # Background
 On_Black = "\033[40m"  # Black Background
@@ -50,7 +49,7 @@ class SharePoint:
     def auth(self):
         # Authentication
         try:
-            print("Authenticating...")
+            print(f"{Blue}Authenticating...")
 
             self.authSpCookie = Office365(
                 self.spLink, username=self.spLogin, password=self.spPassword
@@ -66,15 +65,15 @@ class SharePoint:
             # Enter the site and get the List
             self.authSpList = self.authSpSite.List(self.spList)
 
-            print("Successfully authenticated!")
+            print(f"{Green}Successfully authenticated!")
         except Exception:
-            print("SharePoint authentication failed.", sys.exc_info())
+            print(f"{Red}SharePoint authentication failed.", sys.exc_info())
             sys.exit(0)
 
     def get(self):
         # Get items from the Lists
         try:
-            print("Getting items from SharePoint...")
+            print(f"{Blue}Getting items from SharePoint...")
 
             self.getFields = ["ID", "Title", "Organization"]
 
@@ -83,17 +82,17 @@ class SharePoint:
                 "All Items", fields=self.getFields
             )
 
-            print("Data successfully obtained:")
+            print(f"{Green}SharePoint data successfully obtained:")
 
             for item in self.getData:
-                print(item)
+                print(f"{Yellow}", item)
         except Exception:
-            print("Failed getting SharePoint Lists.", sys.exc_info())
+            print(f"{Red}Failed getting SharePoint Lists.", sys.exc_info())
 
     def download(self):
         # Download data as csv from the Lists
         try:
-            print("Downloading csv...")
+            print(f"{Blue}Downloading csv...")
 
             # Get existing data from SharePoint
             self.get()
@@ -106,14 +105,14 @@ class SharePoint:
                 writer.writeheader()
                 writer.writerows(self.getData)
 
-            print("Successfully downloaded data from SharePoint!")
+            print(f"{Green}Successfully downloaded data from SharePoint!")
         except Exception:
-            print("Failed downloading SharePoint Lists.", sys.exc_info())
+            print(f"{Red}Failed downloading SharePoint Lists.", sys.exc_info())
 
     def insert(self, path):
         # Insert data from a worksheet file to Microsoft List
         try:
-            print("Reading and inserting data...")
+            print(f"{Blue}Reading and inserting data...")
 
             # Get existing data from SharePoint
             self.get()
@@ -141,9 +140,11 @@ class SharePoint:
             updated = self.authSpList.UpdateListItems(data=updateData, kind="Update")
 
             if inserted and updated:
-                print("Successfully inserted and updated data in the SharePoint!")
+                print(
+                    f"{Green}Successfully inserted and updated data in the SharePoint!"
+                )
         except Exception:
-            print("Failed inserting data in the SharePoint.", sys.exc_info())
+            print(f"{Red}Failed inserting data in the SharePoint.", sys.exc_info())
 
     def create(self):
         # Create new items
@@ -154,13 +155,13 @@ class SharePoint:
                 {"Title": "Expertise", "Organization": "É nois"},
             ]
 
-            print("Creating items...")
+            print(f"{Blue}Creating items...")
 
             created = self.authSpList.UpdateListItems(data=newData, kind="New")
             if created:
-                print("Successfully created items!")
+                print(f"{Green}Successfully created items!")
         except Exception:
-            print("SharePoint Lists creation failed.", sys.exc_info())
+            print(f"{Red}SharePoint Lists creation failed.", sys.exc_info())
 
     def update(self):
         # Update the list
@@ -171,13 +172,13 @@ class SharePoint:
                 {"ID": "34", "Title": "Update 4", "Organization": "Mondelez"},
             ]
 
-            print("Updating items...")
+            print(f"{Blue}Updating items...")
 
             updated = self.authSpList.UpdateListItems(data=updateData, kind="Update")
             if updated:
-                print("Successfully updated items!")
+                print(f"{Green}Successfully updated items!")
         except Exception:
-            print("SharePoint Lists update failed.", sys.exc_info())
+            print(f"{Red}SharePoint Lists update failed.", sys.exc_info())
 
     def remove(self):
         # Remove items
@@ -185,27 +186,27 @@ class SharePoint:
             # Ids to remove
             removeData = ["21"]
 
-            print("Removing items...")
+            print(f"{Blue}Removing items...")
 
             removed = self.authSpList.UpdateListItems(data=removeData, kind="Delete")
             if removed:
-                print("Successfully removed items!")
+                print(f"{Green}Successfully removed items!")
         except Exception:
-            print("SharePoint Lists remove failed.", sys.exc_info())
+            print(f"{Red}SharePoint Lists remove failed.", sys.exc_info())
 
     def mongoConnect(self):
         # MongoDB connection
         try:
-            print("Connecting to MongoDB...")
+            print(f"{Blue}Connecting to MongoDB...")
 
             self.mongoClient = pymongo.MongoClient(self.mongoClient)
             self.mongoDatabase = self.mongoClient[self.mongoDatabase]
             self.mongoCollection = self.mongoDatabase[self.mongoCollection]
 
-            print(self.mongoClient.server_info())
-            print("Successfully connected to MongoDB!")
+            print(f"{Yellow}Connected:", self.mongoClient.server_info())
+            print(f"{Green}Successfully connected to MongoDB!")
         except Exception:
-            print("Unable to connect to the MongoDB server.", sys.exc_info())
+            print(f"{Red}Unable to connect to the MongoDB server.", sys.exc_info())
             sys.exit(0)
 
     def mongoProcess(self):
@@ -214,7 +215,7 @@ class SharePoint:
             # Connect to MongoDB
             self.mongoConnect()
 
-            print("Running MongoDB test process...")
+            print(f"{Blue}Running MongoDB test process...")
 
             self.mongoCollection.insert_one(
                 {"Title": "mongo test", "Organization": "Brasil"}
@@ -236,16 +237,16 @@ class SharePoint:
 
             items = self.mongoCollection.find({})
             for item in items:
-                print(item)
+                print(f"{Yellow}", item)
 
-            print("MongoDB test process successfully finished!")
+            print(f"{Green}MongoDB test process successfully finished!")
         except Exception:
-            print("MongoDB test process failed.", sys.exc_info())
+            print(f"{Red}MongoDB test process failed.", sys.exc_info())
 
     def sync(self):
         # Sync MongoDB with SharePoint Lists
         try:
-            print("Syncing databases...")
+            print(f"{Blue}Syncing databases...")
 
             # Connect to MongoDB
             self.mongoConnect()
@@ -254,18 +255,16 @@ class SharePoint:
             self.get()
 
             # Get data from both databases
-            print("")
             mongoData = self.mongoCollection.find({})
+            print(f"{Blue}MongoDB data:")
             for item in mongoData:
-                print(item)
+                print(f"{Yellow}", item)
 
             spData = self.getData
-            for item in spData:
-                print(item)
 
-            print("Successfully synced the databases!")
+            print(f"{Green}Successfully synced the databases!")
         except Exception:
-            print("Failed syncing databases.", sys.exc_info())
+            print(f"{Red}Failed syncing databases.", sys.exc_info())
 
 
 def main():
@@ -385,7 +384,7 @@ def main():
         if opts.spSync:
             sharepoint.sync()
     except Exception:
-        print("Error:", sys.exc_info())
+        print(f"{Red}Error:", sys.exc_info())
 
 
 def showHelp():
