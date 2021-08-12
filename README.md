@@ -20,6 +20,9 @@ SP_PASSWORD=<your-Microsoft-password>
 SP_LINK=<https://abc.sharepoint.com>
 SP_SITE=<MySharePointSite>                    # from https://abc.sharepoint.com/sites/MySharePointSite
 SP_LIST=<list-name>
+MONGO_CLIENT=<mongo-connection-string>
+MONGO_DATABASE=<database-name>
+MONGO_COLLECTION=<collection-name>
 ```
 
 Then, just run the program:
