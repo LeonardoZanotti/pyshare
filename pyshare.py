@@ -101,11 +101,19 @@ class SharePoint:
                 csv_reader = csv.reader(csv_file, delimiter=",")
                 fields = next(csv_reader)
                 for values in csv_reader:
-                    newData.append(dict(zip(fields, values)))
+                    dictionary = dict(zip(fields, values))
+                    for data in self.getData:
+                        if data["Title"] == dictionary["Title"]:
+                            dictionary["ID"] = data["ID"]
+                    updateData.append(
+                        dictionary
+                    ) if "ID" in dictionary else newData.append(dictionary)
             inserted = self.authSpList.UpdateListItems(data=newData, kind="New")
-            if inserted:
-                print("Successfully inserted data in the SharePoint!")
-        except Exception:
+            updated = self.authSpList.UpdateListItems(data=updateData, kind="Update")
+            if inserted and updated:
+                print("Successfully inserted and updated data in the SharePoint!")
+        except Exception as e:
+            print(str(e))
             print("Failed inserting data in the SharePoint.", sys.exc_info())
 
     def create(self):
