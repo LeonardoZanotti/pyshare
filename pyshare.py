@@ -38,6 +38,7 @@ class SharePoint:
         # Authentication
         try:
             print("Authenticating...")
+
             self.authSpCookie = Office365(
                 self.spLink, username=self.spLogin, password=self.spPassword
             ).GetCookies()
@@ -51,6 +52,7 @@ class SharePoint:
 
             # Enter the site and get the List
             self.authSpList = self.authSpSite.List(self.spList)
+
             print("Successfully authenticated!")
         except Exception:
             print("SharePoint authentication failed.", sys.exc_info())
@@ -60,6 +62,7 @@ class SharePoint:
         # Get items from the Lists
         try:
             print("Getting items from SharePoint...")
+
             self.getFields = ["ID", "Title", "Organization"]
 
             # Get the list of the site
@@ -68,6 +71,7 @@ class SharePoint:
             )
 
             print("Data successfully obtained:")
+
             for item in self.getData:
                 print(item)
         except Exception:
@@ -77,8 +81,10 @@ class SharePoint:
         # Download data as csv from the Lists
         try:
             print("Downloading csv...")
+
             # Get existing data from SharePoint
             self.get()
+
             # Download
             with open(
                 f"./reports/{self.spList}.csv", "w", encoding="UTF8", newline=""
@@ -86,6 +92,7 @@ class SharePoint:
                 writer = csv.DictWriter(f, fieldnames=self.getFields)
                 writer.writeheader()
                 writer.writerows(self.getData)
+
             print("Successfully downloaded data from SharePoint!")
         except Exception:
             print("Failed downloading SharePoint Lists.", sys.exc_info())
@@ -94,24 +101,32 @@ class SharePoint:
         # Insert data from a worksheet file to Microsoft List
         try:
             print("Reading and inserting data...")
+
             # Get existing data from SharePoint
             self.get()
+
             # Insert
             newData = list()
             updateData = list()
+
             with open(path) as csv_file:
                 csv_reader = csv.reader(csv_file, delimiter=",")
                 fields = next(csv_reader)
+
                 for values in csv_reader:
                     dictionary = dict(zip(fields, values))
+
                     for data in self.getData:
                         if data["Title"] == dictionary["Title"]:
                             dictionary["ID"] = data["ID"]
+
                     updateData.append(
                         dictionary
                     ) if "ID" in dictionary else newData.append(dictionary)
+
             inserted = self.authSpList.UpdateListItems(data=newData, kind="New")
             updated = self.authSpList.UpdateListItems(data=updateData, kind="Update")
+
             if inserted and updated:
                 print("Successfully inserted and updated data in the SharePoint!")
         except Exception:
@@ -127,6 +142,7 @@ class SharePoint:
             ]
 
             print("Creating items...")
+
             created = self.authSpList.UpdateListItems(data=newData, kind="New")
             if created:
                 print("Successfully created items!")
@@ -143,6 +159,7 @@ class SharePoint:
             ]
 
             print("Updating items...")
+
             updated = self.authSpList.UpdateListItems(data=updateData, kind="Update")
             if updated:
                 print("Successfully updated items!")
@@ -156,6 +173,7 @@ class SharePoint:
             removeData = ["21"]
 
             print("Removing items...")
+
             removed = self.authSpList.UpdateListItems(data=removeData, kind="Delete")
             if removed:
                 print("Successfully removed items!")
@@ -166,9 +184,11 @@ class SharePoint:
         # MongoDB connection
         try:
             print("Connecting to MongoDB...")
+
             self.mongoClient = pymongo.MongoClient(self.mongoClient)
             self.mongoDatabase = self.mongoClient[self.mongoDatabase]
             self.mongoCollection = self.mongoDatabase[self.mongoCollection]
+
             print(self.mongoClient.server_info())
             print("Successfully connected to MongoDB!")
         except Exception:
@@ -180,7 +200,9 @@ class SharePoint:
         try:
             # Connect to MongoDB
             self.mongoConnect()
+
             print("Running MongoDB test process...")
+
             self.mongoCollection.insert_one(
                 {"Title": "mongo test", "Organization": "Brasil"}
             )
@@ -198,9 +220,11 @@ class SharePoint:
             )
             self.mongoCollection.delete_one({"Organization": "Hero"})
             self.mongoCollection.delete_many({"Title": "company two"})
+
             items = self.mongoCollection.find({})
             for item in items:
                 print(item)
+
             print("MongoDB test process successfully finished!")
         except Exception:
             print("MongoDB test process failed.", sys.exc_info())
@@ -209,10 +233,22 @@ class SharePoint:
         # Sync MongoDB with SharePoint Lists
         try:
             print("Syncing databases...")
+
             # Connect to MongoDB
             self.mongoConnect()
+
             # Get existing data from SharePoint
             self.get()
+
+            # Get data from both databases
+            mongoData = self.mongoCollection.find({})
+            for item in mongoData:
+                print(item)
+
+            spData = self.getData
+            for item in spData:
+                print(item)
+
             print("Successfully synced the databases!")
         except Exception:
             print("Failed syncing databases.", sys.exc_info())
@@ -341,14 +377,17 @@ def showHelp():
     colors = True  # output colored c:
     machine = sys.platform  # detecting the os
     checkPlatform = platform.platform()  # get current version of os
+
     if machine.lower().startswith(("os", "win", "darwin", "ios")):
         colors = False  # Mac and Windows shouldn't display colors :c
+
     if (
         checkPlatform.startswith("Windows-10")
         and int(platform.version().split(".")[2]) >= 10586
     ):
         color = True  # coooolorssss \o/
         os.system("")  # Enables the ANSI -> standard encoding that reads that colors
+
     if not colors:
         BGreen = BYellow = BPurple = BCyan = Yellow = Green = Red = Blue = On_Black = ""
     else:
