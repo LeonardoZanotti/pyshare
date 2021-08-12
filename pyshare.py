@@ -96,7 +96,7 @@ class SharePoint:
         # Delete items
         try:
             # Ids to delete
-            deleteData = ["23", "24"]
+            deleteData = ["19", "20"]
 
             print("Deleting items...")
             deleted = self.authSpList.UpdateListItems(data=deleteData, kind="Delete")
@@ -122,7 +122,7 @@ class SharePoint:
                 {"Title": "company four"}, {"$set": {"Title": "company five"}}
             )
             collection.update_many(
-                {"Title": "company two"}, {"$set": {"Title": "company six"}}
+                {"Title": "company five"}, {"$set": {"Title": "company one"}}
             )
             items = collection.find({})
             for item in items:
@@ -138,6 +138,14 @@ def main():
         # Options list
         parser = OptionParser(
             usage="Usage: python3.7 %prog [options]", add_help_option=True
+        )
+        parser.add_option(
+            "-g",
+            "--get",
+            action="store_true",
+            dest="spGet",
+            default=False,
+            help="List all the items in Microsoft List",
         )
         parser.add_option(
             "-c",
@@ -192,21 +200,29 @@ def main():
         # Authentication
         sharepoint.auth()
 
+        # List items
+        if opts.spGet:
+            sharepoint.get()
+
         # Create new items
-        if "-c" in args:
+        if opts.spCreate:
             sharepoint.create()
 
         # Update the list
-        if "-u" in args:
+        if opts.spUpdate:
             sharepoint.update()
 
         # Delete items
-        if "-d" in args:
+        if opts.spDelete:
             sharepoint.delete()
 
         # MongoDB
-        if "-m" in args:
+        if opts.spMongo:
             sharepoint.mongo()
+
+        # Sync MongoDB and SharePoint
+        if opts.spSync:
+            print("dale")
     except Exception:
         print("Error:", sys.exc_info())
 
