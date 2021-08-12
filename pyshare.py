@@ -90,12 +90,21 @@ class SharePoint:
         except Exception:
             print("Failed downloading SharePoint Lists.", sys.exc_info())
 
-    def insert(self):
+    def insert(self, path):
         # Insert data from a worksheet file to Microsoft List
         try:
             print("Reading and inserting data...")
             # Insert
-            print("Successfully inserted data in the SharePoint!")
+            newData = list()
+            updateData = list()
+            with open(path) as csv_file:
+                csv_reader = csv.reader(csv_file, delimiter=",")
+                fields = next(csv_reader)
+                for values in csv_reader:
+                    newData.append(dict(zip(fields, values)))
+            inserted = self.authSpList.UpdateListItems(data=newData, kind="New")
+            if inserted:
+                print("Successfully inserted data in the SharePoint!")
         except Exception:
             print("Failed inserting data in the SharePoint.", sys.exc_info())
 
@@ -202,9 +211,8 @@ def main():
         parser.add_option(
             "-i",
             "--insert",
-            action="store_true",
             dest="spInsert",
-            default=False,
+            metavar="path",
             help="Insert data in the SharePoint from a worksheet file",
         )
         parser.add_option(
@@ -251,7 +259,7 @@ def main():
         opts, args = parser.parse_args()
 
         # No options passed
-        if not (True in vars(opts).values()):
+        if not any(vars(opts).values()):
             showHelp()
             return
 
@@ -272,7 +280,8 @@ def main():
 
         # Insert worksheet file data to SharePoint
         if opts.spInsert:
-            sharepoint.insert()
+            sharepoint.get()
+            sharepoint.insert(opts.spInsert)
 
         # Create new items
         if opts.spCreate:
