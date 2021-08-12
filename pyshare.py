@@ -3,14 +3,11 @@
 # https://github.com/LeonardoZanotti/pyshare
 
 import csv
-
-# python modules
 import os
 import platform
 import sys
 from optparse import OptionParser
 
-# external modules
 import pymongo
 from decouple import config
 from shareplum import Office365, Site
@@ -62,7 +59,7 @@ class SharePoint:
         # Get items from the Lists
         try:
             print("Getting items from SharePoint...")
-            self.getFields = ["ID", "Title"]
+            self.getFields = ["ID", "Title", "Organization"]
 
             # Get the list of the site
             self.getData = self.authSpList.GetListItems(
@@ -112,15 +109,17 @@ class SharePoint:
             updated = self.authSpList.UpdateListItems(data=updateData, kind="Update")
             if inserted and updated:
                 print("Successfully inserted and updated data in the SharePoint!")
-        except Exception as e:
-            print(str(e))
+        except Exception:
             print("Failed inserting data in the SharePoint.", sys.exc_info())
 
     def create(self):
         # Create new items
         try:
             # New data to create
-            newData = [{"Title": "Bingo"}, {"Title": "Expertise"}]
+            newData = [
+                {"Title": "Bingo", "Organization": "Brasa"},
+                {"Title": "Expertise", "Organization": "É nois"},
+            ]
 
             print("Creating items...")
             created = self.authSpList.UpdateListItems(data=newData, kind="New")
@@ -134,8 +133,8 @@ class SharePoint:
         try:
             # Data to update
             updateData = [
-                {"ID": "11", "Title": "Belest"},
-                {"ID": "12", "Title": "Update 4"},
+                {"ID": "33", "Title": "Belest", "Organization": "GrowinCo"},
+                {"ID": "34", "Title": "Update 4", "Organization": "Mondelez"},
             ]
 
             print("Updating items...")
@@ -168,14 +167,14 @@ class SharePoint:
             print("Running payload...")
             db = client[self.mongoDatabase]
             collection = db[self.mongoCollection]
-            collection.insert_one({"Title": "mongo test"})
-            collection.insert_one({"Title": "company two"})
-            collection.insert_one({"Title": "company four"})
+            collection.insert_one({"Title": "mongo test", "Organization": "Brasil"})
+            collection.insert_one({"Title": "company two", "Organization": "Yep"})
+            collection.insert_one({"Title": "company four", "Organization": "Hero"})
             collection.update_one(
                 {"Title": "company four"}, {"$set": {"Title": "company five"}}
             )
             collection.update_many(
-                {"Title": "company five"}, {"$set": {"Title": "company one"}}
+                {"Title": "company five"}, {"$set": {"Organization": "org one"}}
             )
             items = collection.find({})
             for item in items:
