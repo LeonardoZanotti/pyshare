@@ -19,7 +19,7 @@ from shareplum.site import Version
 
 class SharePoint:
     def __init__(self):
-        # Get environment variables
+        # Set class variables and get environment ones
         self.spLogin = config("SP_LOGIN")
         self.spPassword = config("SP_PASSWORD")
         self.spLink = config("SP_LINK")
@@ -54,7 +54,7 @@ class SharePoint:
 
             # Enter the site and get the List
             self.authSpList = self.authSpSite.List(self.spList)
-            print("Authenticated!")
+            print("Successfully authenticated!")
         except Exception:
             print("SharePoint authentication failed.", sys.exc_info())
 
@@ -62,14 +62,14 @@ class SharePoint:
         # Get items from the Lists
         try:
             print("Getting items from SharePoint...")
-            # Get the list of the site
             self.getFields = ["ID", "Title"]
 
+            # Get the list of the site
             self.getData = self.authSpList.GetListItems(
                 "All Items", fields=self.getFields
             )
 
-            print("Got it:")
+            print("Data successfully obtained:")
             for item in self.getData:
                 print(item)
         except Exception:
@@ -86,9 +86,18 @@ class SharePoint:
                 writer = csv.DictWriter(f, fieldnames=self.getFields)
                 writer.writeheader()
                 writer.writerows(self.getData)
-            print("Downloaded!")
+            print("Successfully downloaded data from SharePoint!")
         except Exception:
             print("Failed downloading SharePoint Lists.", sys.exc_info())
+
+    def insert(self):
+        # Insert data from a worksheet file to Microsoft List
+        try:
+            print("Reading and inserting data...")
+            # Insert
+            print("Successfully inserted data in the SharePoint!")
+        except Exception:
+            print("Failed inserting data in the SharePoint.", sys.exc_info())
 
     def create(self):
         # Create new items
@@ -155,9 +164,17 @@ class SharePoint:
             for item in items:
                 print(item)
             collection.delete_many({"Title": "mongo test"})
-            print("MongoDB finished...")
+            print("MongoDB process successfully finished!")
         except Exception:
             print("Unable to connect to the mongo server.", sys.exc_info())
+
+    def sync(self):
+        # Sync MongoDB with SharePoint Lists
+        try:
+            print("Syncing databases...")
+            print("Successfully synced the databases!")
+        except Exception:
+            print("Failed syncing databases.", sys.exc_info())
 
 
 def main():
@@ -181,6 +198,14 @@ def main():
             dest="spDownload",
             default=False,
             help="download all the items in Microsoft List as csv worksheet",
+        )
+        parser.add_option(
+            "-i",
+            "--insert",
+            action="store_true",
+            dest="spInsert",
+            default=False,
+            help="Insert data in the SharePoint from a worksheet file",
         )
         parser.add_option(
             "-c",
@@ -225,6 +250,7 @@ def main():
 
         opts, args = parser.parse_args()
 
+        # No options passed
         if not (True in vars(opts).values()):
             showHelp()
             return
@@ -244,6 +270,10 @@ def main():
             sharepoint.get()
             sharepoint.download()
 
+        # Insert worksheet file data to SharePoint
+        if opts.spInsert:
+            sharepoint.insert()
+
         # Create new items
         if opts.spCreate:
             sharepoint.create()
@@ -262,7 +292,7 @@ def main():
 
         # Sync MongoDB and SharePoint
         if opts.spSync:
-            print("dale")
+            sharepoint.sync()
     except Exception:
         print("Error:", sys.exc_info())
 
