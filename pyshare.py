@@ -54,6 +54,7 @@ class SharePoint:
             print("Successfully authenticated!")
         except Exception:
             print("SharePoint authentication failed.", sys.exc_info())
+            sys.exit(0)
 
     def get(self):
         # Get items from the Lists
@@ -76,7 +77,7 @@ class SharePoint:
         # Download data as csv from the Lists
         try:
             print("Downloading csv...")
-            # Get existing data
+            # Get existing data from SharePoint
             self.get()
             # Download
             with open(
@@ -93,7 +94,7 @@ class SharePoint:
         # Insert data from a worksheet file to Microsoft List
         try:
             print("Reading and inserting data...")
-            # Get existing data
+            # Get existing data from SharePoint
             self.get()
             # Insert
             newData = list()
@@ -161,37 +162,56 @@ class SharePoint:
         except Exception:
             print("SharePoint Lists remove failed.", sys.exc_info())
 
-    def mongo(self):
-        # MongoDB
+    def mongoConnect(self):
+        # MongoDB connection
         try:
             print("Connecting to MongoDB...")
-            client = pymongo.MongoClient(self.mongoClient)
-            print(client.server_info())
-            print("Connected!")
-            print("Running payload...")
-            db = client[self.mongoDatabase]
-            collection = db[self.mongoCollection]
-            collection.insert_one({"Title": "mongo test", "Organization": "Brasil"})
-            collection.insert_one({"Title": "company two", "Organization": "Yep"})
-            collection.insert_one({"Title": "company four", "Organization": "Hero"})
-            collection.update_one(
+            self.mongoClient = pymongo.MongoClient(self.mongoClient)
+            self.mongoDatabase = self.mongoClient[self.mongoDatabase]
+            self.mongoCollection = self.mongoDatabase[self.mongoCollection]
+            print(self.mongoClient.server_info())
+            print("Successfully connected to MongoDB!")
+        except Exception:
+            print("Unable to connect to the MongoDB server.", sys.exc_info())
+            sys.exit(0)
+
+    def mongoProcess(self):
+        # MongoDB test process
+        try:
+            # Connect to MongoDB
+            self.mongoConnect()
+            print("Running MongoDB test process...")
+            self.mongoCollection.insert_one(
+                {"Title": "mongo test", "Organization": "Brasil"}
+            )
+            self.mongoCollection.insert_one(
+                {"Title": "company two", "Organization": "Yep"}
+            )
+            self.mongoCollection.insert_one(
+                {"Title": "company four", "Organization": "Hero"}
+            )
+            self.mongoCollection.update_one(
                 {"Title": "company four"}, {"$set": {"Title": "company five"}}
             )
-            collection.update_many(
+            self.mongoCollection.update_many(
                 {"Title": "company five"}, {"$set": {"Organization": "org one"}}
             )
-            items = collection.find({})
+            self.mongoCollection.delete_one({"Organization": "Hero"})
+            self.mongoCollection.delete_many({"Title": "company two"})
+            items = self.mongoCollection.find({})
             for item in items:
                 print(item)
-            collection.delete_many({"Title": "mongo test"})
-            print("MongoDB process successfully finished!")
+            print("MongoDB test process successfully finished!")
         except Exception:
-            print("Unable to connect to the mongo server.", sys.exc_info())
+            print("MongoDB test process failed.", sys.exc_info())
 
     def sync(self):
         # Sync MongoDB with SharePoint Lists
         try:
             print("Syncing databases...")
+            # Connect to MongoDB
+            self.mongoConnect()
+            # Get existing data from SharePoint
             self.get()
             print("Successfully synced the databases!")
         except Exception:
@@ -307,7 +327,7 @@ def main():
 
         # MongoDB
         if opts.spMongo:
-            sharepoint.mongo()
+            sharepoint.mongoProcess()
 
         # Sync MongoDB and SharePoint
         if opts.spSync:
