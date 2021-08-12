@@ -2,6 +2,8 @@
 # Leonardo Zanotti
 # https://github.com/LeonardoZanotti/pyshare
 
+import csv
+
 # python modules
 import os
 import platform
@@ -26,6 +28,8 @@ class SharePoint:
         self.mongoClient = config("MONGO_CLIENT")
         self.mongoDatabase = config("MONGO_DATABASE")
         self.mongoCollection = config("MONGO_COLLECTION")
+        self.getFields = None
+        self.getData = None
         self.authSpCookie = None
         self.authSpSite = None
         self.authSpList = None
@@ -36,6 +40,7 @@ class SharePoint:
     def auth(self):
         # Authentication
         try:
+            print("Authenticating...")
             self.authSpCookie = Office365(
                 self.spLink, username=self.spLogin, password=self.spPassword
             ).GetCookies()
@@ -49,19 +54,41 @@ class SharePoint:
 
             # Enter the site and get the List
             self.authSpList = self.authSpSite.List(self.spList)
+            print("Authenticated!")
         except Exception:
             print("SharePoint authentication failed.", sys.exc_info())
 
     def get(self):
         # Get items from the Lists
         try:
+            print("Getting items from SharePoint...")
             # Get the list of the site
-            data = self.authSpList.GetListItems("All Items", fields=["ID", "Title"])
+            self.getFields = ["ID", "Title"]
 
-            for item in data:
+            self.getData = self.authSpList.GetListItems(
+                "All Items", fields=self.getFields
+            )
+
+            print("Got it:")
+            for item in self.getData:
                 print(item)
         except Exception:
             print("Failed getting SharePoint Lists.", sys.exc_info())
+
+    def download(self):
+        # Download data as csv from the Lists
+        try:
+            print("Downloading csv...")
+            # Download
+            with open(
+                f"./reports/{self.spList}.csv", "w", encoding="UTF8", newline=""
+            ) as f:
+                writer = csv.DictWriter(f, fieldnames=self.getFields)
+                writer.writeheader()
+                writer.writerows(self.getData)
+            print("Downloaded!")
+        except Exception:
+            print("Failed downloading SharePoint Lists.", sys.exc_info())
 
     def create(self):
         # Create new items
@@ -92,18 +119,18 @@ class SharePoint:
         except Exception:
             print("SharePoint Lists update failed.", sys.exc_info())
 
-    def delete(self):
-        # Delete items
+    def remove(self):
+        # Remove items
         try:
-            # Ids to delete
-            deleteData = ["19", "20"]
+            # Ids to remove
+            removeData = ["21"]
 
-            print("Deleting items...")
-            deleted = self.authSpList.UpdateListItems(data=deleteData, kind="Delete")
-            if deleted:
-                print("Successfully deleted items!")
+            print("Removing items...")
+            removed = self.authSpList.UpdateListItems(data=removeData, kind="Delete")
+            if removed:
+                print("Successfully removed items!")
         except Exception:
-            print("SharePoint Lists delete failed.", sys.exc_info())
+            print("SharePoint Lists remove failed.", sys.exc_info())
 
     def mongo(self):
         # MongoDB
@@ -145,7 +172,15 @@ def main():
             action="store_true",
             dest="spGet",
             default=False,
-            help="List all the items in Microsoft List",
+            help="list all the items in Microsoft List",
+        )
+        parser.add_option(
+            "-d",
+            "--download",
+            action="store_true",
+            dest="spDownload",
+            default=False,
+            help="download all the items in Microsoft List as csv worksheet",
         )
         parser.add_option(
             "-c",
@@ -164,12 +199,12 @@ def main():
             help="update items in Microsoft List",
         )
         parser.add_option(
-            "-d",
-            "--delete",
+            "-r",
+            "--remove",
             action="store_true",
-            dest="spDelete",
+            dest="spRemove",
             default=False,
-            help="delete items of Microsoft List",
+            help="remove items of Microsoft List",
         )
         parser.add_option(
             "-m",
@@ -204,6 +239,11 @@ def main():
         if opts.spGet:
             sharepoint.get()
 
+        # List items
+        if opts.spDownload:
+            sharepoint.get()
+            sharepoint.download()
+
         # Create new items
         if opts.spCreate:
             sharepoint.create()
@@ -212,9 +252,9 @@ def main():
         if opts.spUpdate:
             sharepoint.update()
 
-        # Delete items
-        if opts.spDelete:
-            sharepoint.delete()
+        # Remove items
+        if opts.spRemove:
+            sharepoint.remove()
 
         # MongoDB
         if opts.spMongo:
