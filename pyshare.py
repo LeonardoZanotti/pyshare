@@ -76,6 +76,8 @@ class SharePoint:
         # Download data as csv from the Lists
         try:
             print("Downloading csv...")
+            # Get existing data
+            self.get()
             # Download
             with open(
                 f"./reports/{self.spList}.csv", "w", encoding="UTF8", newline=""
@@ -91,6 +93,8 @@ class SharePoint:
         # Insert data from a worksheet file to Microsoft List
         try:
             print("Reading and inserting data...")
+            # Get existing data
+            self.get()
             # Insert
             newData = list()
             updateData = list()
@@ -188,6 +192,7 @@ class SharePoint:
         # Sync MongoDB with SharePoint Lists
         try:
             print("Syncing databases...")
+            self.get()
             print("Successfully synced the databases!")
         except Exception:
             print("Failed syncing databases.", sys.exc_info())
@@ -220,7 +225,7 @@ def main():
             "--insert",
             dest="spInsert",
             metavar="path",
-            help="Insert data in the SharePoint from a worksheet file",
+            help="insert data in the SharePoint from a worksheet file",
         )
         parser.add_option(
             "-c",
@@ -282,12 +287,10 @@ def main():
 
         # Download items data as csv
         if opts.spDownload:
-            sharepoint.get()
             sharepoint.download()
 
         # Insert worksheet file data to SharePoint
         if opts.spInsert:
-            sharepoint.get()
             sharepoint.insert(opts.spInsert)
 
         # Create new items

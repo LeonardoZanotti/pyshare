@@ -1,23 +1,9 @@
-ID,Title
-1,company1
-2,second company
-3,Ash
-4,Update
-5,Update 3
-6,Future C
-7,flawless
-8,Expert
-10,Expert
-11,Belest
-12,Update 4
-13,Bingo
-14,Expertise
-15,Bingo
-16,Expertise
-17,Bingo
-18,Expertise
-22,Expertise
-25,Bingo
-26,Expertise
-27,Bingo
-28,Expertise
+ID,Title,Organization
+33,Belest,GrowinCo
+34,Update 4,Mondelez
+35,mass upload,Leonardo
+36,from csv 2,Zano
+37,inserted done,o mesmo
+38,Bingo 2,novo bingo
+39,Bingo,Brasa
+40,Expertise,É nois
