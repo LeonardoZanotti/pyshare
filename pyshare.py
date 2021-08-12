@@ -239,7 +239,7 @@ def main():
         if opts.spGet:
             sharepoint.get()
 
-        # List items
+        # Download items data as csv
         if opts.spDownload:
             sharepoint.get()
             sharepoint.download()
