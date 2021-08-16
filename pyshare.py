@@ -75,7 +75,7 @@ class SharePoint:
         try:
             print(f"{Blue}Getting items from SharePoint...")
 
-            self.getFields = ["ID", "Title", "Organization"]
+            self.getFields = ["ID", "Title", "Organization", "Modificado"]
 
             # Get the list of the site
             self.getData = self.authSpList.GetListItems(
@@ -261,15 +261,35 @@ class SharePoint:
 
             # Get existing data from SharePoint
             self.get()
+            spData = self.getData
 
             # Get data from both databases
-            mongoData = self.mongoCollection.find({})
+            mongoData = list(self.mongoCollection.find({}))
             print(f"{Blue}MongoDB data:")
             for item in mongoData:
                 print(f"{Yellow}", item)
 
-            spData = self.getData
+            currentList = spData + mongoData
+            newList = list()
 
+            for item in currentList:
+                updateItem = None
+
+                for newItem in newList:
+                    if (
+                        newItem.Title == item.Title
+                        and newItem.Organization == item.Organization
+                    ):
+                        updateItem = (
+                            newItem if newItem.UpdatedAt > item.UpdatedAt else item
+                        )
+
+                if updateItem:
+                    newList.append(updateItem)
+                else:
+                    newList.append(item)
+
+            print(newList)
             print(f"{Green}Successfully synced the databases!")
         except Exception:
             print(f"{Red}Failed syncing databases.", sys.exc_info())
