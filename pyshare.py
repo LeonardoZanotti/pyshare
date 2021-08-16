@@ -93,19 +93,19 @@ class SharePoint:
         # Download data as csv from the Lists
         try:
             print(f"{Blue}Downloading csv...")
+            path = f"./reports/{self.spList}.csv"
 
             # Get existing data from SharePoint
             self.get()
 
             # Download
-            with open(
-                f"./reports/{self.spList}.csv", "w", encoding="UTF8", newline=""
-            ) as f:
+            with open(f"{path}", "w", encoding="UTF8", newline="") as f:
                 writer = csv.DictWriter(f, fieldnames=self.getFields)
                 writer.writeheader()
                 writer.writerows(self.getData)
 
             print(f"{Green}Successfully downloaded data from SharePoint!")
+            print(f"{Green}Report saved to {path}")
         except Exception:
             print(f"{Red}Failed downloading SharePoint Lists.", sys.exc_info())
 
@@ -136,12 +136,20 @@ class SharePoint:
                         dictionary
                     ) if "ID" in dictionary else newData.append(dictionary)
 
-            inserted = self.authSpList.UpdateListItems(data=newData, kind="New")
-            updated = self.authSpList.UpdateListItems(data=updateData, kind="Update")
+            inserted = (
+                self.authSpList.UpdateListItems(data=newData, kind="New")
+                if len(newData) > 0
+                else True
+            )
+            updated = (
+                self.authSpList.UpdateListItems(data=updateData, kind="Update")
+                if len(updateData) > 0
+                else True
+            )
 
             if inserted and updated:
                 print(
-                    f"{Green}Successfully inserted and updated data in the SharePoint!"
+                    f"{Green}Successfully inserted {len(newData)} items and updated {len(updateData)} items in the SharePoint!"
                 )
         except Exception:
             print(f"{Red}Failed inserting data in the SharePoint.", sys.exc_info())
