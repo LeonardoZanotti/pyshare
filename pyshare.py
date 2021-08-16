@@ -390,19 +390,19 @@ def main():
 def showHelp():
     print(
         """{BPurple}
-    \t                  _                    
-    \t  _ __  _   _ ___| |__   __ _ _ __ ___ 
+    \t                  _
+    \t  _ __  _   _ ___| |__   __ _ _ __ ___
     \t | '_ \| | | / __| '_ \ / _` | '__/ _ \\
     \t | |_) | |_| \__ \ | | | (_| | | |  __/
     \t | .__/ \__, |___/_| |_|\__,_|_|  \___|
     \t |_|    |___/
-    \t  
+    \t
     {BYellow} # Zanotti's SharePoint automation{Blue}
     https://github.com/LeonardoZanotti/pyshare
 
     To see all the program options use:
     \t
-    {BGreen}$ python3.7 pyshare.py -h          
+    {BGreen}$ python3.7 pyshare.py -h
             """.format(
             BPurple=BPurple,
             BGreen=BGreen,
