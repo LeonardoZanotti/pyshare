@@ -176,8 +176,8 @@ class SharePoint:
         try:
             # Data to update
             updateData = [
-                {"ID": "33", "Title": "Belest", "Organization": "GrowinCo"},
-                {"ID": "34", "Title": "Update 4", "Organization": "Mondelez"},
+                {"ID": "40", "Title": "The first", "Organization": "Its ok"},
+                {"ID": "41", "Title": "The sec", "Organization": "But now"},
             ]
 
             print(f"{Blue}Updating items...")
@@ -192,7 +192,7 @@ class SharePoint:
         # Remove items
         try:
             # Ids to remove
-            removeData = ["21"]
+            removeData = ["42"]
 
             print(f"{Blue}Removing items...")
 
