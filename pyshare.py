@@ -67,8 +67,8 @@ class SharePoint:
             self.authSpList = self.authSpSite.List(self.spList)
 
             print(f"{Green}Successfully authenticated!")
-        except Exception:
-            print(f"{Red}SharePoint authentication failed.", sys.exc_info())
+        except Exception as e:
+            print(f"{Red}SharePoint authentication failed.", e)
             sys.exit(0)
 
     def get(self):
@@ -88,8 +88,8 @@ class SharePoint:
             for item in self.getData:
                 item["UpdatedAt"] = parser.parse(item["Modificado"].split("#")[1])
                 print(f"{Yellow}", item)
-        except Exception:
-            print(f"{Red}Failed getting SharePoint Lists.", sys.exc_info())
+        except Exception as e:
+            print(f"{Red}Failed getting SharePoint Lists.", e)
 
     def download(self):
         # Download data as csv from the Lists
@@ -108,8 +108,8 @@ class SharePoint:
 
             print(f"{Green}Successfully downloaded data from SharePoint!")
             print(f"{Green}Report saved to {path}")
-        except Exception:
-            print(f"{Red}Failed downloading SharePoint Lists.", sys.exc_info())
+        except Exception as e:
+            print(f"{Red}Failed downloading SharePoint Lists.", e)
 
     def insert(self, path):
         # Insert data from a worksheet file to Microsoft List
@@ -153,8 +153,8 @@ class SharePoint:
                 print(
                     f"{Green}Successfully inserted {len(newData)} items and updated {len(updateData)} items in the SharePoint!"
                 )
-        except Exception:
-            print(f"{Red}Failed inserting data in the SharePoint.", sys.exc_info())
+        except Exception as e:
+            print(f"{Red}Failed inserting data in the SharePoint.", e)
 
     def create(self):
         # Create new items
@@ -172,8 +172,8 @@ class SharePoint:
             created = self.authSpList.UpdateListItems(data=newData, kind="New")
             if created:
                 print(f"{Green}Successfully created items!")
-        except Exception:
-            print(f"{Red}SharePoint Lists creation failed.", sys.exc_info())
+        except Exception as e:
+            print(f"{Red}SharePoint Lists creation failed.", e)
 
     def update(self):
         # Update the list
@@ -188,8 +188,8 @@ class SharePoint:
             updated = self.authSpList.UpdateListItems(data=updateData, kind="Update")
             if updated:
                 print(f"{Green}Successfully updated items!")
-        except Exception:
-            print(f"{Red}SharePoint Lists update failed.", sys.exc_info())
+        except Exception as e:
+            print(f"{Red}SharePoint Lists update failed.", e)
 
     def remove(self):
         # Remove items
@@ -202,8 +202,8 @@ class SharePoint:
             removed = self.authSpList.UpdateListItems(data=removeData, kind="Delete")
             if removed:
                 print(f"{Green}Successfully removed items!")
-        except Exception:
-            print(f"{Red}SharePoint Lists remove failed.", sys.exc_info())
+        except Exception as e:
+            print(f"{Red}SharePoint Lists remove failed.", e)
 
     def mongoConnect(self):
         # MongoDB connection
@@ -216,8 +216,8 @@ class SharePoint:
 
             print(f"{Yellow}Connected:", self.mongoClient.server_info())
             print(f"{Green}Successfully connected to MongoDB!")
-        except Exception:
-            print(f"{Red}Unable to connect to the MongoDB server.", sys.exc_info())
+        except Exception as e:
+            print(f"{Red}Unable to connect to the MongoDB server.", e)
             sys.exit(0)
 
     def mongoProcess(self):
@@ -251,8 +251,8 @@ class SharePoint:
                 print(f"{Yellow}", item)
 
             print(f"{Green}MongoDB test process successfully finished!")
-        except Exception:
-            print(f"{Red}MongoDB test process failed.", sys.exc_info())
+        except Exception as e:
+            print(f"{Red}MongoDB test process failed.", e)
 
     def sync(self):
         # Sync MongoDB with SharePoint Lists
@@ -306,8 +306,8 @@ class SharePoint:
             print(f"{Blue}", addToSp)
             print(f"{Red}", updateToSp)
             print(f"{Green}Successfully synced the databases!")
-        except Exception:
-            print(f"{Red}Failed syncing databases.", sys.exc_info())
+        except Exception as e:
+            print(f"{Red}Failed syncing databases.", e)
 
 
 def main():
@@ -426,8 +426,8 @@ def main():
         # Sync MongoDB and SharePoint
         if opts.spSync:
             sharepoint.sync()
-    except Exception:
-        print(f"{Red}Error:", sys.exc_info())
+    except Exception as e:
+        print(f"{Red}Error:", e)
 
 
 def showHelp():
