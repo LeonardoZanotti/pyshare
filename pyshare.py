@@ -272,6 +272,7 @@ class SharePoint:
             print(f"{Blue}MongoDB data:")
             for item in mongoData:
                 print(f"{Yellow}", item)
+                item.pop("_id", None)
 
             newList = list()
 
@@ -284,9 +285,9 @@ class SharePoint:
                         and mongoItem["Organization"] == spItem["Organization"]
                         and mongoItem["UpdatedAt"] > spItem["UpdatedAt"]
                     ):
-                        print("ok")
                         updateItem = mongoItem
 
+                updateItem.pop("ID", None)
                 newList.append(updateItem)
                 if updateItem in mongoData:
                     mongoData.remove(updateItem)
