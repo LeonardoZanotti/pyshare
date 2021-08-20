@@ -285,7 +285,7 @@ class SharePoint:
                     ):
                         if mongoItem["UpdatedAt"] > spItem["UpdatedAt"]:
                             item = mongoItem.copy()
-                            item["ID"] = spData["ID"]
+                            item["ID"] = spItem["ID"]
                             item.pop("_id", None)
                             updateToSp.append(item)
                             addToSp.remove(mongoItem)
