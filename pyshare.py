@@ -6,6 +6,7 @@ import csv
 import os
 import platform
 import sys
+from datetime import datetime
 from optparse import OptionParser
 
 import pymongo
@@ -161,6 +162,8 @@ class SharePoint:
             newData = [
                 {"Title": "Bingo", "Organization": "Brasa"},
                 {"Title": "Expertise", "Organization": "É nois"},
+                {"Title": "Safe", "Organization": "Tudo beleza"},
+                {"Title": "company two", "Organization": "Yep"},
             ]
 
             print(f"{Blue}Creating items...")
@@ -192,7 +195,7 @@ class SharePoint:
         # Remove items
         try:
             # Ids to remove
-            removeData = ["42"]
+            removeData = ["33", "34", "35", "36", "37", "38", "39", "40", "41"]
 
             print(f"{Blue}Removing items...")
 
@@ -225,23 +228,23 @@ class SharePoint:
 
             print(f"{Blue}Running MongoDB test process...")
 
-            self.mongoCollection.insert_one(
-                {"Title": "mongo test", "Organization": "Brasil"}
-            )
-            self.mongoCollection.insert_one(
-                {"Title": "company two", "Organization": "Yep"}
-            )
-            self.mongoCollection.insert_one(
-                {"Title": "company four", "Organization": "Hero"}
-            )
-            self.mongoCollection.update_one(
-                {"Title": "company four"}, {"$set": {"Title": "company five"}}
-            )
+            # self.mongoCollection.insert_one(
+            #     {"Title": "mongo test", "Organization": "Brasil"}
+            # )
+            # self.mongoCollection.insert_one(
+            #     {"Title": "company two", "Organization": "Yep"}
+            # )
+            # self.mongoCollection.insert_one(
+            #     {"Title": "Safe", "Organization": "Tudo beleza"},
+            # )
+            # self.mongoCollection.update_one(
+            #     {"Title": "company four"}, {"$set": {"Title": "company five"}}
+            # )
             self.mongoCollection.update_many(
-                {"Title": "company five"}, {"$set": {"Organization": "org one"}}
+                {}, {"$set": {"UpdatedAt": datetime.now()}}
             )
-            self.mongoCollection.delete_one({"Organization": "Hero"})
-            self.mongoCollection.delete_many({"Title": "company two"})
+            # self.mongoCollection.delete_one({"Organization": "Hero"})
+            # self.mongoCollection.delete_many({"Title": "company two"})
 
             items = self.mongoCollection.find({})
             for item in items:
@@ -273,7 +276,7 @@ class SharePoint:
             newList = list()
 
             for item in currentList:
-                updateItem = None
+                updateItem = item
 
                 for newItem in newList:
                     if (
@@ -284,10 +287,7 @@ class SharePoint:
                             newItem if newItem.UpdatedAt > item.UpdatedAt else item
                         )
 
-                if updateItem:
-                    newList.append(updateItem)
-                else:
-                    newList.append(item)
+                newList.append(updateItem)
 
             print(newList)
             print(f"{Green}Successfully synced the databases!")
