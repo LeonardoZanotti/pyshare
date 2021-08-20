@@ -278,29 +278,30 @@ class SharePoint:
             updateToSp = list()
 
             for spItem in spData:
+                foundInMongo = False
                 for mongoItem in mongoData:
                     if (
                         mongoItem["Title"] == spItem["Title"]
                         and mongoItem["Organization"] == spItem["Organization"]
                     ):
+                        foundInMongo = True
+                        addToSp.remove(mongoItem)
                         if mongoItem["UpdatedAt"] > spItem["UpdatedAt"]:
                             item = mongoItem.copy()
                             item["ID"] = spItem["ID"]
                             item.pop("_id", None)
                             updateToSp.append(item)
-                            addToSp.remove(mongoItem)
                         elif mongoItem["UpdatedAt"] < spItem["UpdatedAt"]:
                             item = spItem.copy()
                             item["_id"] = mongoItem["_id"]
                             item.pop("ID", None)
                             updateToMongo.append(item)
-                            addToSp.remove(mongoItem)
                         else:
                             pass
-                    else:
-                        item = spItem.copy()
-                        item.pop("ID", None)
-                        addToMongo.append(item)
+                if not foundInMongo:
+                    item = spItem.copy()
+                    item.pop("ID", None)
+                    addToMongo.append(item)
             print(f"{Green}", addToMongo)
             print(f"{Yellow}", updateToMongo)
             print(f"{Blue}", addToSp)
