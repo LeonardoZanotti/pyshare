@@ -6,10 +6,10 @@ import csv
 import os
 import platform
 import sys
-from datetime import datetime
 from optparse import OptionParser
 
 import pymongo
+from dateutil import parser
 from decouple import config
 from shareplum import Office365, Site
 from shareplum.site import Version
@@ -86,6 +86,7 @@ class SharePoint:
             print(f"{Green}SharePoint data successfully obtained:")
 
             for item in self.getData:
+                item["UpdatedAt"] = parser.parse(item["Modificado"].split("#")[1])
                 print(f"{Yellow}", item)
         except Exception:
             print(f"{Red}Failed getting SharePoint Lists.", sys.exc_info())
@@ -272,23 +273,25 @@ class SharePoint:
             for item in mongoData:
                 print(f"{Yellow}", item)
 
-            currentList = spData + mongoData
             newList = list()
 
-            for item in currentList:
-                updateItem = item
+            for spItem in spData:
+                updateItem = spItem
 
-                for newItem in newList:
+                for mongoItem in mongoData:
                     if (
-                        newItem.Title == item.Title
-                        and newItem.Organization == item.Organization
+                        mongoItem["Title"] == spItem["Title"]
+                        and mongoItem["Organization"] == spItem["Organization"]
+                        and mongoItem["UpdatedAt"] > spItem["UpdatedAt"]
                     ):
-                        updateItem = (
-                            newItem if newItem.UpdatedAt > item.UpdatedAt else item
-                        )
+                        print("ok")
+                        updateItem = mongoItem
 
                 newList.append(updateItem)
+                if updateItem in mongoData:
+                    mongoData.remove(updateItem)
 
+            newList = newList + mongoData
             print(newList)
             print(f"{Green}Successfully synced the databases!")
         except Exception:
