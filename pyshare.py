@@ -180,8 +180,7 @@ class SharePoint:
         try:
             # Data to update
             updateData = [
-                {"ID": "40", "Title": "The first", "Organization": "Its ok"},
-                {"ID": "41", "Title": "The sec", "Organization": "But now"},
+                {"ID": "46", "Title": "Safe", "Organization": "Tudo beleza"},
             ]
 
             print(f"{Blue}Updating items...")
@@ -272,28 +271,40 @@ class SharePoint:
             print(f"{Blue}MongoDB data:")
             for item in mongoData:
                 print(f"{Yellow}", item)
-                item.pop("_id", None)
 
-            newList = list()
+            addToMongo = list()
+            updateToMongo = list()
+            addToSp = mongoData.copy()
+            updateToSp = list()
 
             for spItem in spData:
-                updateItem = spItem
-
                 for mongoItem in mongoData:
                     if (
                         mongoItem["Title"] == spItem["Title"]
                         and mongoItem["Organization"] == spItem["Organization"]
-                        and mongoItem["UpdatedAt"] > spItem["UpdatedAt"]
                     ):
-                        updateItem = mongoItem
-
-                updateItem.pop("ID", None)
-                newList.append(updateItem)
-                if updateItem in mongoData:
-                    mongoData.remove(updateItem)
-
-            newList = newList + mongoData
-            print(newList)
+                        if mongoItem["UpdatedAt"] > spItem["UpdatedAt"]:
+                            item = mongoItem.copy()
+                            item["ID"] = spData["ID"]
+                            item.pop("_id", None)
+                            updateToSp.append(item)
+                            addToSp.remove(mongoItem)
+                        elif mongoItem["UpdatedAt"] < spItem["UpdatedAt"]:
+                            item = spItem.copy()
+                            item["_id"] = mongoItem["_id"]
+                            item.pop("ID", None)
+                            updateToMongo.append(item)
+                            addToSp.remove(mongoItem)
+                        else:
+                            pass
+                    else:
+                        item = spItem.copy()
+                        item.pop("ID", None)
+                        addToMongo.append(item)
+            print(f"{Green}", addToMongo)
+            print(f"{Yellow}", updateToMongo)
+            print(f"{Blue}", addToSp)
+            print(f"{Red}", updateToSp)
             print(f"{Green}Successfully synced the databases!")
         except Exception:
             print(f"{Red}Failed syncing databases.", sys.exc_info())
