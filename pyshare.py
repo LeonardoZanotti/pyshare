@@ -38,7 +38,6 @@ class SharePoint:
         self.mongoClient = config("MONGO_CLIENT")
         self.mongoDatabase = config("MONGO_DATABASE")
         self.mongoCollection = config("MONGO_COLLECTION")
-        self.getFields = None
         self.getData = None
         self.authSpCookie = None
         self.authSpSite = None
@@ -76,17 +75,12 @@ class SharePoint:
         try:
             print(f"{Blue}Getting items from SharePoint...")
 
-            self.getFields = ["ID", "Title", "Organization", "Modificado"]
-
             # Get the list of the site
-            self.getData = self.authSpList.GetListItems(
-                "All Items", fields=self.getFields
-            )
+            self.getData = self.authSpList.GetListItems("All Items")
 
             print(f"{Green}SharePoint data successfully obtained:")
 
             for item in self.getData:
-                item["UpdatedAt"] = parser.parse(item["Modificado"].split("#")[1])
                 print(f"{Yellow}", item)
         except Exception as e:
             print(f"{Red}Failed getting SharePoint Lists.", e)
@@ -102,7 +96,7 @@ class SharePoint:
 
             # Download
             with open(f"{path}", "w", encoding="UTF8", newline="") as f:
-                writer = csv.DictWriter(f, fieldnames=self.getFields)
+                writer = csv.DictWriter(f)
                 writer.writeheader()
                 writer.writerows(self.getData)
 
@@ -289,16 +283,20 @@ class SharePoint:
                         foundInMongo = True
                         addToSp.remove(mongoItem)
 
-                        if mongoItem["UpdatedAt"] > spItem["UpdatedAt"]:
+                        if mongoItem["UpdatedAt"] > spItem["Modificado"]:
                             # Mongo has the newer version
                             item = mongoItem.copy()
+                            item["Modificado"] = item["UpdatedAt"]
+                            item.pop("UpdatedAt", None)
                             item["ID"] = spItem["ID"]
                             item.pop("_id", None)
                             updateToSp.append(item)
-                        elif mongoItem["UpdatedAt"] < spItem["UpdatedAt"]:
+                        elif mongoItem["UpdatedAt"] < spItem["Modificado"]:
                             # SP has the newer version
                             item = spItem.copy()
                             item["_id"] = mongoItem["_id"]
+                            item["UpdatedAt"] = item["Modificado"]
+                            item.pop("Modificado", None)
                             item.pop("ID", None)
                             updateToMongo.append(item)
                         else:
@@ -308,12 +306,19 @@ class SharePoint:
                 # Item only in the SP
                 if not foundInMongo:
                     item = spItem.copy()
+                    item["UpdatedAt"] = item["Modificado"]
+                    item.pop("Modificado", None)
                     item.pop("ID", None)
                     addToMongo.append(item)
-            print(f"{Green}", addToMongo)
-            print(f"{Yellow}", updateToMongo)
-            print(f"{Blue}", addToSp)
-            print(f"{Red}", updateToSp)
+
+            for item in addToSp:
+                item["Modificado"] = item["UpdatedAt"]
+                item.pop("UpdatedAt", None)
+                item.pop("_id", None)
+            print(f"{Green} Adding to Mongo: ", addToMongo)
+            print(f"{Yellow} Updating to Mongo: ", updateToMongo)
+            print(f"{Blue} Adding to SP: ", addToSp)
+            print(f"{Red} Updating to SP: ", updateToSp)
             print(f"{Green}Successfully synced the databases!")
         except Exception as e:
             print(f"{Red}Failed syncing databases.", e)
