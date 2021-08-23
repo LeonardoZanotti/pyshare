@@ -150,16 +150,20 @@ class SharePoint:
         except Exception as e:
             print(f"{Red}Failed inserting data in the SharePoint.", e)
 
-    def create(self):
+    def create(self, data):
         # Create new items
         try:
             # New data to create
-            newData = [
-                {"Title": "Bingo", "Organization": "Brasa"},
-                {"Title": "Expertise", "Organization": "É nois"},
-                {"Title": "Safe", "Organization": "Tudo beleza"},
-                {"Title": "company two", "Organization": "Yep"},
-            ]
+            newData = (
+                data
+                if data
+                else [
+                    {"Title": "Bingo", "Organization": "Brasa"},
+                    {"Title": "Expertise", "Organization": "É nois"},
+                    {"Title": "Safe", "Organization": "Tudo beleza"},
+                    {"Title": "company two", "Organization": "Yep"},
+                ]
+            )
 
             print(f"{Blue}Creating items...")
 
@@ -169,13 +173,17 @@ class SharePoint:
         except Exception as e:
             print(f"{Red}SharePoint Lists creation failed.", e)
 
-    def update(self):
+    def update(self, data):
         # Update the list
         try:
             # Data to update
-            updateData = [
-                {"ID": "46", "Title": "Safe", "Organization": "Tudo beleza"},
-            ]
+            updateData = (
+                data
+                if data
+                else [
+                    {"ID": "46", "Title": "Safe", "Organization": "Tudo beleza"},
+                ]
+            )
 
             print(f"{Blue}Updating items...")
 
@@ -185,11 +193,13 @@ class SharePoint:
         except Exception as e:
             print(f"{Red}SharePoint Lists update failed.", e)
 
-    def remove(self):
+    def remove(self, data):
         # Remove items
         try:
             # Ids to remove
-            removeData = ["33", "34", "35", "36", "37", "38", "39", "40", "41"]
+            removeData = (
+                data if data else ["33", "34", "35", "36", "37", "38", "39", "40", "41"]
+            )
 
             print(f"{Blue}Removing items...")
 
@@ -214,7 +224,7 @@ class SharePoint:
             print(f"{Red}Unable to connect to the MongoDB server.", e)
             sys.exit(0)
 
-    def mongoProcess(self):
+    def mongoProcess(self, createData, updateData):
         # MongoDB test process
         try:
             # Connect to MongoDB
@@ -222,23 +232,10 @@ class SharePoint:
 
             print(f"{Blue}Running MongoDB test process...")
 
-            # self.mongoCollection.insert_one(
-            #     {"Title": "mongo test", "Organization": "Brasil"}
-            # )
-            # self.mongoCollection.insert_one(
-            #     {"Title": "company two", "Organization": "Yep"}
-            # )
-            # self.mongoCollection.insert_one(
-            #     {"Title": "Safe", "Organization": "Tudo beleza"},
-            # )
-            # self.mongoCollection.update_one(
-            #     {"Title": "company four"}, {"$set": {"Title": "company five"}}
-            # )
-            self.mongoCollection.update_many(
-                {}, {"$set": {"UpdatedAt": datetime.now()}}
-            )
-            # self.mongoCollection.delete_one({"Organization": "Hero"})
-            # self.mongoCollection.delete_many({"Title": "company two"})
+            self.mongoCollection.insert_many(createData)
+
+            for item in updateData:
+                self.mongoCollection.update_one({"_id": item["id"]}, item)
 
             items = self.mongoCollection.find({})
             for item in items:
@@ -435,7 +432,10 @@ def main():
 
         # MongoDB
         if opts.spMongo:
-            sharepoint.mongoProcess()
+            sharepoint.mongoProcess(
+                [],
+                [],
+            )
 
         # Sync MongoDB and SharePoint
         if opts.spSync:
