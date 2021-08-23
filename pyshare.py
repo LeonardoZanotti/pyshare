@@ -70,8 +70,29 @@ class SharePoint:
             print(f"{Red}SharePoint authentication failed.", e)
             sys.exit(0)
 
-    def test(self):
-        print("")
+    def test(self, option):
+        if option not in ["sc", "su", "sr", "mc", "mu", "mr"]:
+            print(f"{Red}Option should be one of the following: sc, su, sr, mc, mu, mr")
+            return
+
+        if option == "sc":
+            data = [{}]
+            created = self.authSpList.UpdateListItems(data=data, kind="New")
+            if created:
+                print(f"{Green}Successfully created items!")
+        if option == "su":
+            data = [{}]
+            created = self.authSpList.UpdateListItems(data=data, kind="Update")
+            if created:
+                print(f"{Green}Successfully created items!")
+        if option == "sr":
+            data = ["1"]
+            created = self.authSpList.UpdateListItems(data=data, kind="Delete")
+            if created:
+                print(f"{Green}Successfully created items!")
+        # if option == "mc":
+        # if option == "mu":
+        # if option == "md":
 
     def get(self):
         # Get items from the Lists
@@ -312,10 +333,10 @@ class SharePoint:
                 item.pop("UpdatedAt", None)
                 item.pop("_id", None)
 
-            print(f"{Green} Adding to Mongo: ", addToMongo)
-            print(f"{Yellow} Updating to Mongo: ", updateToMongo)
-            print(f"{Blue} Adding to SP: ", addToSp)
-            print(f"{Red} Updating to SP: ", updateToSp)
+            print(f"{Green}Adding to Mongo: ", addToMongo)
+            print(f"{Yellow}Updating to Mongo: ", updateToMongo)
+            print(f"{Blue}Adding to SP: ", addToSp)
+            print(f"{Red}Updating to SP: ", updateToSp)
 
             self.mongoProcess(addToMongo, updateToMongo, False)
             self.create(addToSp)
@@ -335,9 +356,8 @@ def main():
         parser.add_option(
             "-t",
             "--test",
-            action="store_true",
             dest="spTest",
-            default=False,
+            metavar="option",
             help="Perform test operations or some individual function",
         )
         parser.add_option(
@@ -389,7 +409,7 @@ def main():
 
         # Test/Run function
         if opts.spTest:
-            sharepoint.test()
+            sharepoint.test(opts.spTest)
 
         # List items
         if opts.spGet:
