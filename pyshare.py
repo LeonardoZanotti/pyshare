@@ -153,7 +153,10 @@ class SharePoint:
     def create(self, data):
         # Create new items
         try:
-            print(f"{Blue}Creating items...")
+            print(f"{Blue}Creating SP items...")
+            if len(data) == 0:
+                print(f"{Yellow}No data to create!")
+                return
             created = self.authSpList.UpdateListItems(data=data, kind="New")
             if created:
                 print(f"{Green}Successfully created items!")
@@ -163,7 +166,10 @@ class SharePoint:
     def update(self, data):
         # Update the list
         try:
-            print(f"{Blue}Updating items...")
+            print(f"{Blue}Updating SP items...")
+            if len(data) == 0:
+                print(f"{Yellow}No data to update!")
+                return
             updated = self.authSpList.UpdateListItems(data=data, kind="Update")
             if updated:
                 print(f"{Green}Successfully updated items!")
@@ -173,7 +179,10 @@ class SharePoint:
     def remove(self, data):
         # Remove items
         try:
-            print(f"{Blue}Removing items...")
+            print(f"{Blue}Removing SP items...")
+            if len(data) == 0:
+                print(f"{Yellow}No data to remove!")
+                return
             removed = self.authSpList.UpdateListItems(data=data, kind="Delete")
             if removed:
                 print(f"{Green}Successfully removed items!")
@@ -204,10 +213,20 @@ class SharePoint:
 
             print(f"{Blue}Running MongoDB test process...")
 
-            self.mongoCollection.insert_many(createData)
+            if len(createData) > 0:
+                print("Creating Mongo data...")
+                self.mongoCollection.insert_many(createData)
+            else:
+                print(f"{Yellow}No data to create!")
 
-            for item in updateData:
-                self.mongoCollection.update_one({"_id": item["_id"]}, item)
+            if len(updateData) > 0:
+                print("Updating Mongo data...")
+                for item in updateData:
+                    self.mongoCollection.update_one(
+                        {"_id": item["_id"]}, {"$set": item}, upsert=False
+                    )
+            else:
+                print(f"{Yellow}No data to update!")
 
             items = self.mongoCollection.find({})
             for item in items:
@@ -250,7 +269,8 @@ class SharePoint:
                         and mongoItem["Organization"] == spItem["Organization"]
                     ):
                         foundInMongo = True
-                        addToSp.remove(mongoItem)
+                        if mongoItem in addToSp:
+                            addToSp.remove(mongoItem)
 
                         if mongoItem["UpdatedAt"] > spItem["Modificado"]:
                             # Mongo has the newer version
