@@ -97,9 +97,13 @@ class SharePoint:
             # Get existing data from SharePoint
             self.get()
 
+            if len(self.getData) == 0:
+                print(f"{Yellow}No data in the SharePoint!")
+                return
+
             # Download
             with open(f"{path}", "w", encoding="UTF8", newline="") as f:
-                writer = csv.DictWriter(f)
+                writer = csv.DictWriter(f, fieldnames=self.getData[0].keys())
                 writer.writeheader()
                 writer.writerows(self.getData)
 
