@@ -89,7 +89,7 @@ class SharePoint:
                     print(f"{Green}Successfully created SP items!")
 
             if option == "su":
-                data = [{"ID": "66", "Title": "New title"}]
+                data = [{"ID": "67", "Title": "sim"}]
                 updated = self.authSpList.UpdateListItems(data=data, kind="Update")
                 if updated:
                     print(f"{Green}Successfully updated SP items!")
