@@ -76,17 +76,17 @@ class SharePoint:
             return
 
         if option == "sc":
-            data = [{}]
+            data = [{"Title": "New title", "Organization": "New Organization"}]
             created = self.authSpList.UpdateListItems(data=data, kind="New")
             if created:
                 print(f"{Green}Successfully created items!")
         if option == "su":
-            data = [{}]
+            data = [{"ID": "66", "Title": "New title"}]
             created = self.authSpList.UpdateListItems(data=data, kind="Update")
             if created:
                 print(f"{Green}Successfully created items!")
         if option == "sr":
-            data = ["1"]
+            data = ["66", "69"]
             created = self.authSpList.UpdateListItems(data=data, kind="Delete")
             if created:
                 print(f"{Green}Successfully created items!")
