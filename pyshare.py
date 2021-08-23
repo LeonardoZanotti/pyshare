@@ -186,6 +186,7 @@ class SharePoint:
             print(f"{Green}SharePoint data successfully obtained:")
 
             for item in self.getData:
+                item["website"] = item["website"].split(",")[0]
                 print(f"{Yellow}", item)
         except Exception as e:
             print(f"{Red}Failed getting SharePoint Lists:", e)
