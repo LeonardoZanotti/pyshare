@@ -1,6 +1,4 @@
 #!/usr/bin/env python3.7
-# Leonardo Zanotti
-# https://github.com/LeonardoZanotti/pyshare
 
 import csv
 import os
@@ -520,9 +518,7 @@ def showHelp():
     \t | .__/ \__, |___/_| |_|\__,_|_|  \___|
     \t |_|    |___/
     \t
-    {BYellow} # Zanotti's SharePoint automation{Blue}
-    https://github.com/LeonardoZanotti/pyshare
-
+    {Blue}
     To see all the program options use:
     \t
     {BGreen}$ python3.7 pyshare.py -h
