@@ -68,7 +68,7 @@ class SharePoint:
 
             print(f"{Green}Successfully authenticated!")
         except Exception as e:
-            print(f"{Red}SharePoint authentication failed.", e)
+            print(f"{Red}SharePoint authentication failed:", e)
             sys.exit(0)
 
     def test(self, option, connect):
@@ -125,7 +125,7 @@ class SharePoint:
                 if removed:
                     print(f"{Green}Successfully removed Mongo items!")
         except Exception as e:
-            print(f"{Red}Test process failed.", e)
+            print(f"{Red}Test process failed:", e)
 
     def get(self):
         # Get items from the Lists
@@ -140,7 +140,7 @@ class SharePoint:
             for item in self.getData:
                 print(f"{Yellow}", item)
         except Exception as e:
-            print(f"{Red}Failed getting SharePoint Lists.", e)
+            print(f"{Red}Failed getting SharePoint Lists:", e)
 
     def download(self):
         # Download data as csv from the Lists
@@ -164,7 +164,7 @@ class SharePoint:
             print(f"{Green}Successfully downloaded data from SharePoint!")
             print(f"{Green}Report saved to {path}")
         except Exception as e:
-            print(f"{Red}Failed downloading SharePoint Lists.", e)
+            print(f"{Red}Failed downloading SharePoint Lists:", e)
 
     def insert(self, path):
         # Insert data from a worksheet file to Microsoft List
@@ -209,7 +209,7 @@ class SharePoint:
                     f"{Green}Successfully inserted {len(newData)} items and updated {len(updateData)} items in the SharePoint!"
                 )
         except Exception as e:
-            print(f"{Red}Failed inserting data in the SharePoint.", e)
+            print(f"{Red}Failed inserting data in the SharePoint:", e)
 
     def create(self, data):
         # Create new items
@@ -222,7 +222,7 @@ class SharePoint:
             if created:
                 print(f"{Green}Successfully created items!")
         except Exception as e:
-            print(f"{Red}SharePoint Lists creation failed.", e)
+            print(f"{Red}SharePoint Lists creation failed:", e)
 
     def update(self, data):
         # Update the list
@@ -235,7 +235,7 @@ class SharePoint:
             if updated:
                 print(f"{Green}Successfully updated items!")
         except Exception as e:
-            print(f"{Red}SharePoint Lists update failed.", e)
+            print(f"{Red}SharePoint Lists update failed:", e)
 
     def remove(self, data):
         # Remove items
@@ -248,7 +248,7 @@ class SharePoint:
             if removed:
                 print(f"{Green}Successfully removed items!")
         except Exception as e:
-            print(f"{Red}SharePoint Lists remove failed.", e)
+            print(f"{Red}SharePoint Lists remove failed:", e)
 
     def mongoConnect(self):
         # MongoDB connection
@@ -262,7 +262,7 @@ class SharePoint:
             print(f"{Yellow}Connected:", self.mongoClient.server_info())
             print(f"{Green}Successfully connected to MongoDB!")
         except Exception as e:
-            print(f"{Red}Unable to connect to the MongoDB server.", e)
+            print(f"{Red}Unable to connect to the MongoDB server:", e)
             sys.exit(0)
 
     def mongoProcess(self, createData, updateData):
@@ -291,7 +291,7 @@ class SharePoint:
 
             print(f"{Green}MongoDB test process successfully finished!")
         except Exception as e:
-            print(f"{Red}MongoDB test process failed.", e)
+            print(f"{Red}MongoDB test process failed:", e)
 
     def sync(self):
         # Sync MongoDB with SharePoint Lists
@@ -373,7 +373,7 @@ class SharePoint:
 
             print(f"{Green}Successfully synced the databases!")
         except Exception as e:
-            print(f"{Red}Failed syncing databases.", e)
+            print(f"{Red}Failed syncing databases:", e)
 
 
 def main():
