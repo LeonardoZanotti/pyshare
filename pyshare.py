@@ -153,21 +153,8 @@ class SharePoint:
     def create(self, data):
         # Create new items
         try:
-            # New data to create
-            newData = (
-                data
-                if data
-                else [
-                    {"Title": "Bingo", "Organization": "Brasa"},
-                    {"Title": "Expertise", "Organization": "É nois"},
-                    {"Title": "Safe", "Organization": "Tudo beleza"},
-                    {"Title": "company two", "Organization": "Yep"},
-                ]
-            )
-
             print(f"{Blue}Creating items...")
-
-            created = self.authSpList.UpdateListItems(data=newData, kind="New")
+            created = self.authSpList.UpdateListItems(data=data, kind="New")
             if created:
                 print(f"{Green}Successfully created items!")
         except Exception as e:
@@ -176,18 +163,8 @@ class SharePoint:
     def update(self, data):
         # Update the list
         try:
-            # Data to update
-            updateData = (
-                data
-                if data
-                else [
-                    {"ID": "46", "Title": "Safe", "Organization": "Tudo beleza"},
-                ]
-            )
-
             print(f"{Blue}Updating items...")
-
-            updated = self.authSpList.UpdateListItems(data=updateData, kind="Update")
+            updated = self.authSpList.UpdateListItems(data=data, kind="Update")
             if updated:
                 print(f"{Green}Successfully updated items!")
         except Exception as e:
@@ -196,14 +173,8 @@ class SharePoint:
     def remove(self, data):
         # Remove items
         try:
-            # Ids to remove
-            removeData = (
-                data if data else ["33", "34", "35", "36", "37", "38", "39", "40", "41"]
-            )
-
             print(f"{Blue}Removing items...")
-
-            removed = self.authSpList.UpdateListItems(data=removeData, kind="Delete")
+            removed = self.authSpList.UpdateListItems(data=data, kind="Delete")
             if removed:
                 print(f"{Green}Successfully removed items!")
         except Exception as e:
@@ -224,18 +195,19 @@ class SharePoint:
             print(f"{Red}Unable to connect to the MongoDB server.", e)
             sys.exit(0)
 
-    def mongoProcess(self, createData, updateData):
+    def mongoProcess(self, createData, updateData, connect=True):
         # MongoDB test process
         try:
             # Connect to MongoDB
-            self.mongoConnect()
+            if connect:
+                self.mongoConnect()
 
             print(f"{Blue}Running MongoDB test process...")
 
             self.mongoCollection.insert_many(createData)
 
             for item in updateData:
-                self.mongoCollection.update_one({"_id": item["id"]}, item)
+                self.mongoCollection.update_one({"_id": item["_id"]}, item)
 
             items = self.mongoCollection.find({})
             for item in items:
@@ -312,10 +284,16 @@ class SharePoint:
                 item["Modificado"] = item["UpdatedAt"]
                 item.pop("UpdatedAt", None)
                 item.pop("_id", None)
+
             print(f"{Green} Adding to Mongo: ", addToMongo)
             print(f"{Yellow} Updating to Mongo: ", updateToMongo)
             print(f"{Blue} Adding to SP: ", addToSp)
             print(f"{Red} Updating to SP: ", updateToSp)
+
+            self.mongoProcess(addToMongo, updateToMongo, False)
+            self.create(addToSp)
+            self.update(updateToSp)
+
             print(f"{Green}Successfully synced the databases!")
         except Exception as e:
             print(f"{Red}Failed syncing databases.", e)
@@ -349,38 +327,6 @@ def main():
             dest="spInsert",
             metavar="path",
             help="insert data in the SharePoint from a worksheet file",
-        )
-        parser.add_option(
-            "-c",
-            "--create",
-            action="store_true",
-            dest="spCreate",
-            default=False,
-            help="create items in Microsoft List",
-        )
-        parser.add_option(
-            "-u",
-            "--update",
-            action="store_true",
-            dest="spUpdate",
-            default=False,
-            help="update items in Microsoft List",
-        )
-        parser.add_option(
-            "-r",
-            "--remove",
-            action="store_true",
-            dest="spRemove",
-            default=False,
-            help="remove items of Microsoft List",
-        )
-        parser.add_option(
-            "-m",
-            "--mongo",
-            action="store_true",
-            dest="spMongo",
-            default=False,
-            help="do some MongoDB test operations",
         )
         parser.add_option(
             "-s",
@@ -417,25 +363,6 @@ def main():
         # Insert worksheet file data to SharePoint
         if opts.spInsert:
             sharepoint.insert(opts.spInsert)
-
-        # Create new items
-        if opts.spCreate:
-            sharepoint.create()
-
-        # Update the list
-        if opts.spUpdate:
-            sharepoint.update()
-
-        # Remove items
-        if opts.spRemove:
-            sharepoint.remove()
-
-        # MongoDB
-        if opts.spMongo:
-            sharepoint.mongoProcess(
-                [],
-                [],
-            )
 
         # Sync MongoDB and SharePoint
         if opts.spSync:
