@@ -70,6 +70,9 @@ class SharePoint:
             print(f"{Red}SharePoint authentication failed.", e)
             sys.exit(0)
 
+    def test(self):
+        print("")
+
     def get(self):
         # Get items from the Lists
         try:
@@ -326,6 +329,14 @@ def main():
             usage="Usage: python3.7 %prog [options]", add_help_option=True
         )
         parser.add_option(
+            "-t",
+            "--test",
+            action="store_true",
+            dest="spTest",
+            default=False,
+            help="Perform test operations or some individual function",
+        )
+        parser.add_option(
             "-g",
             "--get",
             action="store_true",
@@ -371,6 +382,10 @@ def main():
 
         # Authentication
         sharepoint.auth()
+
+        # Test/Run function
+        if opts.spTest:
+            sharepoint.test()
 
         # List items
         if opts.spGet:
