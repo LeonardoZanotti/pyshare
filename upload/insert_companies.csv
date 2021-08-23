@@ -1,6 +1,6 @@
-Title,Organization
-mass upload,Leonardo
-from csv 2,Zano
-inserted done,o mesmo
-Bingo,Ele
-Bingo 3,novo bingo again
+Title,Organization,type,website
+mass upload,Leonardo,Brief,https://google.com.br
+from csv 2,Zano,Post,https://youtube.com
+inserted done,o mesmo,Welever,https://google.com.uk
+Bingo,Ele,safe,https://uol.com.br
+Bingo 3,novo bingo again,De boa,https://yahoo.com

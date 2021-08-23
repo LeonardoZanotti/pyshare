@@ -85,16 +85,39 @@ class SharePoint:
 
             if option == "sc":
                 data = [
-                    {"Title": "comp1", "Organization": "org1"},
-                    {"Title": "comp2", "Organization": "org2"},
-                    {"Title": "comp3", "Organization": "org3"},
+                    {
+                        "Title": "comp1",
+                        "Organization": "org1",
+                        "type": "CPG",
+                        "website": "https://google.com",
+                    },
+                    {
+                        "Title": "comp2",
+                        "Organization": "org2",
+                        "type": "Startup",
+                        "website": "https://youtube.com",
+                    },
+                    {
+                        "Title": "comp3",
+                        "Organization": "org3",
+                        "type": "Noice",
+                        "website": "https://uol.com.br",
+                    },
                 ]
                 created = self.authSpList.UpdateListItems(data=data, kind="New")
                 if created:
                     print(f"{Green}Successfully created SP items!")
 
             if option == "su":
-                data = [{"ID": "67", "Title": "comp2"}]
+                data = [
+                    {
+                        "ID": "67",
+                        "Title": "comp2",
+                        "Organization": "org2",
+                        "type": "Startup",
+                        "website": "https://youtube.com",
+                    }
+                ]
                 updated = self.authSpList.UpdateListItems(data=data, kind="Update")
                 if updated:
                     print(f"{Green}Successfully updated SP items!")
@@ -110,16 +133,22 @@ class SharePoint:
                     {
                         "Title": "comp1",
                         "Organization": "org1",
+                        "type": "Fixes",
+                        "website": "https://mercadolivre.com",
                         "UpdatedAt": datetime.now(),
                     },
                     {
                         "Title": "comp2",
                         "Organization": "org2",
+                        "type": "Tranquilo",
+                        "website": "https://dale.com",
                         "UpdatedAt": datetime.now() - timedelta(days=1),
                     },
                     {
                         "Title": "comp4",
                         "Organization": "org4",
+                        "type": "Company",
+                        "website": "https://growinco.com",
                         "UpdatedAt": datetime.now(),
                     },
                 ]
