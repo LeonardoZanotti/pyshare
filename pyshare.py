@@ -6,7 +6,7 @@ import csv
 import os
 import platform
 import sys
-from datetime import datetime
+from datetime import datetime, timedelta
 from optparse import OptionParser
 
 import pymongo
@@ -83,13 +83,17 @@ class SharePoint:
                 self.mongoConnect()
 
             if option == "sc":
-                data = [{"Title": "New title", "Organization": "New Organization"}]
+                data = [
+                    {"Title": "comp1", "Organization": "org1"},
+                    {"Title": "comp2", "Organization": "org2"},
+                    {"Title": "comp3", "Organization": "org3"},
+                ]
                 created = self.authSpList.UpdateListItems(data=data, kind="New")
                 if created:
                     print(f"{Green}Successfully created SP items!")
 
             if option == "su":
-                data = [{"ID": "67", "Title": "sim"}]
+                data = [{"ID": "67", "Title": "comp2"}]
                 updated = self.authSpList.UpdateListItems(data=data, kind="Update")
                 if updated:
                     print(f"{Green}Successfully updated SP items!")
@@ -102,8 +106,21 @@ class SharePoint:
 
             if option == "mc":
                 data = [
-                    {"Title": "Brasa", "Organization": "Brasil"},
-                    {"Title": "Brasa", "Organization": "Brasil2"},
+                    {
+                        "Title": "comp1",
+                        "Organization": "org1",
+                        "UpdatedAt": datetime.now(),
+                    },
+                    {
+                        "Title": "comp2",
+                        "Organization": "org2",
+                        "UpdatedAt": datetime.now(),
+                    },
+                    {
+                        "Title": "comp4",
+                        "Organization": "org4",
+                        "UpdatedAt": datetime.now(),
+                    },
                 ]
                 created = self.mongoCollection.insert_many(data)
                 if created:
@@ -114,14 +131,15 @@ class SharePoint:
                 #     {"Title": "company four"}, {"$set": {"Title": "company five"}}
                 # )
                 updated = self.mongoCollection.update_many(
-                    {}, {"$set": {"UpdatedAt": datetime.now()}}
+                    {},
+                    {"$set": {"UpdatedAt": datetime.now() - timedelta(days=1)}},
                 )
                 if updated:
                     print(f"{Green}Successfully updated Mongo items!")
 
             if option == "mr":
                 # self.mongoCollection.delete_one({"Organization": "Hero"})
-                removed = self.mongoCollection.delete_many({"Title": "Brasa"})
+                removed = self.mongoCollection.delete_many({})
                 if removed:
                     print(f"{Green}Successfully removed Mongo items!")
         except Exception as e:
@@ -367,9 +385,9 @@ class SharePoint:
             print(f"{Blue}Adding to SP: ", addToSp)
             print(f"{Red}Updating to SP: ", updateToSp)
 
-            self.mongoProcess(addToMongo, updateToMongo)
-            self.create(addToSp)
-            self.update(updateToSp)
+            # self.mongoProcess(addToMongo, updateToMongo)
+            # self.create(addToSp)
+            # self.update(updateToSp)
 
             print(f"{Green}Successfully synced the databases!")
         except Exception as e:
