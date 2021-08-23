@@ -386,9 +386,9 @@ class SharePoint:
             print(f"{Blue}Adding to SP: ", addToSp)
             print(f"{Red}Updating to SP: ", updateToSp)
 
-            # self.mongoProcess(addToMongo, updateToMongo)
-            # self.create(addToSp)
-            # self.update(updateToSp)
+            self.mongoProcess(addToMongo, updateToMongo)
+            self.create(addToSp)
+            self.update(updateToSp)
 
             print(f"{Green}Successfully synced the databases!")
         except Exception as e:
