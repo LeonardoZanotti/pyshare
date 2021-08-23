@@ -5,6 +5,7 @@
 import csv
 import os
 import platform
+import re
 import sys
 from datetime import datetime, timedelta
 from optparse import OptionParser
@@ -114,7 +115,7 @@ class SharePoint:
                     {
                         "Title": "comp2",
                         "Organization": "org2",
-                        "UpdatedAt": datetime.now(),
+                        "UpdatedAt": datetime.now() - timedelta(days=1),
                     },
                     {
                         "Title": "comp4",
@@ -131,8 +132,8 @@ class SharePoint:
                 #     {"Title": "company four"}, {"$set": {"Title": "company five"}}
                 # )
                 updated = self.mongoCollection.update_many(
-                    {},
-                    {"$set": {"UpdatedAt": datetime.now() - timedelta(days=1)}},
+                    {"Title": {"$not": re.compile("comp2")}},
+                    {"$set": {"UpdatedAt": datetime.now()}},
                 )
                 if updated:
                     print(f"{Green}Successfully updated Mongo items!")
