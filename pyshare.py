@@ -279,25 +279,33 @@ class SharePoint:
 
             for spItem in spData:
                 foundInMongo = False
+
                 for mongoItem in mongoData:
+                    # Item in the SP and in the MongoDB
                     if (
                         mongoItem["Title"] == spItem["Title"]
                         and mongoItem["Organization"] == spItem["Organization"]
                     ):
                         foundInMongo = True
                         addToSp.remove(mongoItem)
+
                         if mongoItem["UpdatedAt"] > spItem["UpdatedAt"]:
+                            # Mongo has the newer version
                             item = mongoItem.copy()
                             item["ID"] = spItem["ID"]
                             item.pop("_id", None)
                             updateToSp.append(item)
                         elif mongoItem["UpdatedAt"] < spItem["UpdatedAt"]:
+                            # SP has the newer version
                             item = spItem.copy()
                             item["_id"] = mongoItem["_id"]
                             item.pop("ID", None)
                             updateToMongo.append(item)
                         else:
+                            # Same item
                             pass
+
+                # Item only in the SP
                 if not foundInMongo:
                     item = spItem.copy()
                     item.pop("ID", None)
