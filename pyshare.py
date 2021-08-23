@@ -6,6 +6,7 @@ import csv
 import os
 import platform
 import sys
+from datetime import datetime
 from optparse import OptionParser
 
 import pymongo
@@ -70,29 +71,61 @@ class SharePoint:
             print(f"{Red}SharePoint authentication failed.", e)
             sys.exit(0)
 
-    def test(self, option):
-        if option not in ["sc", "su", "sr", "mc", "mu", "mr"]:
-            print(f"{Red}Option should be one of the following: sc, su, sr, mc, mu, mr")
-            return
+    def test(self, option, connect):
+        try:
+            if option not in ["sc", "su", "sr", "mc", "mu", "mr"]:
+                print(
+                    f"{Red}Option should be one of the following: sc, su, sr, mc, mu, mr"
+                )
+                return
 
-        if option == "sc":
-            data = [{"Title": "New title", "Organization": "New Organization"}]
-            created = self.authSpList.UpdateListItems(data=data, kind="New")
-            if created:
-                print(f"{Green}Successfully created items!")
-        if option == "su":
-            data = [{"ID": "66", "Title": "New title"}]
-            created = self.authSpList.UpdateListItems(data=data, kind="Update")
-            if created:
-                print(f"{Green}Successfully created items!")
-        if option == "sr":
-            data = ["66", "69"]
-            created = self.authSpList.UpdateListItems(data=data, kind="Delete")
-            if created:
-                print(f"{Green}Successfully created items!")
-        # if option == "mc":
-        # if option == "mu":
-        # if option == "md":
+            if connect:
+                self.mongoConnect()
+
+            if option == "sc":
+                data = [{"Title": "New title", "Organization": "New Organization"}]
+                created = self.authSpList.UpdateListItems(data=data, kind="New")
+                if created:
+                    print(f"{Green}Successfully created SP items!")
+
+            if option == "su":
+                data = [{"ID": "66", "Title": "New title"}]
+                updated = self.authSpList.UpdateListItems(data=data, kind="Update")
+                if updated:
+                    print(f"{Green}Successfully updated SP items!")
+
+            if option == "sr":
+                data = ["66", "69"]
+                removed = self.authSpList.UpdateListItems(data=data, kind="Delete")
+                if removed:
+                    print(f"{Green}Successfully removed SP items!")
+
+            if option == "mc":
+                data = [
+                    {"Title": "Brasa", "Organization": "Brasil"},
+                    {"Title": "Brasa", "Organization": "Brasil2"},
+                ]
+                created = self.mongoCollection.insert_many(data)
+                if created:
+                    print(f"{Green}Successfully created Mongo items!")
+
+            if option == "mu":
+                # self.mongoCollection.update_one(
+                #     {"Title": "company four"}, {"$set": {"Title": "company five"}}
+                # )
+                updated = self.mongoCollection.update_many(
+                    {}, {"$set": {"UpdatedAt": datetime.now()}}
+                )
+                if updated:
+                    print(f"{Green}Successfully updated Mongo items!")
+
+            if option == "mr":
+                # self.mongoCollection.delete_one({"Organization": "Hero"})
+                removed = self.mongoCollection.delete_many({"Title": "Brasa"})
+                if removed:
+                    print(f"{Green}Successfully removed Mongo items!")
+        except Exception as e:
+            print(f"{Red}Test process failed.", e)
 
     def get(self):
         # Get items from the Lists
@@ -232,13 +265,9 @@ class SharePoint:
             print(f"{Red}Unable to connect to the MongoDB server.", e)
             sys.exit(0)
 
-    def mongoProcess(self, createData, updateData, connect=True):
+    def mongoProcess(self, createData, updateData):
         # MongoDB test process
         try:
-            # Connect to MongoDB
-            if connect:
-                self.mongoConnect()
-
             print(f"{Blue}Running MongoDB test process...")
 
             if len(createData) > 0:
@@ -338,7 +367,7 @@ class SharePoint:
             print(f"{Blue}Adding to SP: ", addToSp)
             print(f"{Red}Updating to SP: ", updateToSp)
 
-            self.mongoProcess(addToMongo, updateToMongo, False)
+            self.mongoProcess(addToMongo, updateToMongo)
             self.create(addToSp)
             self.update(updateToSp)
 
@@ -409,7 +438,9 @@ def main():
 
         # Test/Run function
         if opts.spTest:
-            sharepoint.test(opts.spTest)
+            # Should connect to MongoDB
+            mongoConnect = True if "m" in opts.spTest else False
+            sharepoint.test(opts.spTest, mongoConnect)
 
         # List items
         if opts.spGet:
