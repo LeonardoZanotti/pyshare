@@ -436,7 +436,7 @@ def main():
             "--test",
             dest="spTest",
             metavar="option",
-            help="Perform test operations or some individual function",
+            help="perform test operations or some individual function",
         )
         parser.add_option(
             "-g",
